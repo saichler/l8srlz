@@ -12,7 +12,7 @@ func (s *ProtoBuffBinary) Mode() interfaces.SerializerMode {
 	return interfaces.BINARY
 }
 
-func (s *ProtoBuffBinary) Marshal(any interface{}, registry interfaces.ITypeRegistry) ([]byte, error) {
+func (s *ProtoBuffBinary) Marshal(any interface{}, registry interfaces.IRegistry) ([]byte, error) {
 	if any == nil {
 		return nil, errors.New("attempting to marshal nil interface")
 	}
@@ -24,8 +24,8 @@ func (s *ProtoBuffBinary) Marshal(any interface{}, registry interfaces.ITypeRegi
 	return proto.Marshal(pb)
 }
 
-func (s *ProtoBuffBinary) Unmarshal(data []byte, typeName string, registry interfaces.ITypeRegistry) (interface{}, error) {
-	info, err := registry.TypeInfo(typeName)
+func (s *ProtoBuffBinary) Unmarshal(data []byte, typeName string, registry interfaces.IRegistry) (interface{}, error) {
+	info, err := registry.Info(typeName)
 	if err != nil {
 		return nil, errors.New("No type info found for type " + typeName)
 	}
