@@ -2,7 +2,7 @@ package serializers
 
 import "github.com/saichler/shared/go/share/interfaces"
 
-var Default interfaces.Serializer = &ProtoBuffBinary{}
+var Default interfaces.ISerializer = &ProtoBuffBinary{}
 
 /*
 import (
