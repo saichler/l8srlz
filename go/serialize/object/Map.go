@@ -31,7 +31,7 @@ func (this *Map) add(any interface{}) ([]byte, int) {
 	return s, len(s)
 }
 
-func (this *Map) get(data []byte, location int, typeName string, registry interfaces.ITypeRegistry) (interface{}, int) {
+func (this *Map) get(data []byte, location int, typeName string, registry interfaces.IRegistry) (interface{}, int) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {

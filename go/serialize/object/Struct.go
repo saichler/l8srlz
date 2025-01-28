@@ -22,7 +22,7 @@ func (this *Struct) add(any interface{}) ([]byte, int) {
 	pb := any.(proto.Message)
 	pbData, err := proto.Marshal(pb)
 	if err != nil {
-		interfaces.Error("Failed To marshal proto ", typeName, " in protobuf object:", err)
+		Log.Error("Failed To marshal proto ", typeName, " in protobuf object:", err)
 		return []byte{}, 0
 	}
 
@@ -34,7 +34,7 @@ func (this *Struct) add(any interface{}) ([]byte, int) {
 	return data, len(data)
 }
 
-func (this *Struct) get(data []byte, location int, typeName string, registry interfaces.ITypeRegistry) (interface{}, int) {
+func (this *Struct) get(data []byte, location int, typeName string, registry interfaces.IRegistry) (interface{}, int) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {
@@ -43,15 +43,15 @@ func (this *Struct) get(data []byte, location int, typeName string, registry int
 
 	typeN, typeSize := stringObjectType.get(data, location)
 	typeName = typeN.(string)
-	info, err := registry.TypeInfo(typeName)
+	info, err := registry.Info(typeName)
 	if err != nil {
-		interfaces.Error("Unknown proto name ", typeName, " in registry, please register it.")
+		Log.Error("Unknown proto name ", typeName, " in registry, please register it.")
 		return []byte{}, 0
 	}
 
 	pb, err := info.NewInstance()
 	if err != nil {
-		interfaces.Error("Unknown proto name ", typeName, " in registry, please register it.")
+		Log.Error("Unknown proto name ", typeName, " in registry, please register it.")
 		return []byte{}, 0
 	}
 
@@ -63,7 +63,7 @@ func (this *Struct) get(data []byte, location int, typeName string, registry int
 
 	err = proto.Unmarshal(protoData, pb.(proto.Message))
 	if err != nil {
-		interfaces.Error("Failed To unmarshal proto ", typeName, ":", err)
+		Log.Error("Failed To unmarshal proto ", typeName, ":", err)
 		return []byte{}, 0
 	}
 	return pb, typeSize + 4 + int(size)

@@ -9,7 +9,7 @@ type SObject struct {
 	data     []byte
 	location int
 	typeName string
-	registry interfaces.ITypeRegistry
+	registry interfaces.IRegistry
 }
 
 type Primitive interface {
@@ -19,7 +19,7 @@ type Primitive interface {
 
 type Complex interface {
 	add(interface{}) ([]byte, int)
-	get([]byte, int, string, interfaces.ITypeRegistry) (interface{}, int)
+	get([]byte, int, string, interfaces.IRegistry) (interface{}, int)
 }
 
 var primitives = make(map[reflect.Kind]Primitive)
@@ -27,6 +27,8 @@ var complex = make(map[reflect.Kind]Complex)
 
 var sizeObjectType = &Int32{}
 var stringObjectType = &String{}
+
+var Log interfaces.ILogger
 
 func init() {
 	primitives[reflect.Int] = &Int{}
@@ -44,7 +46,7 @@ func init() {
 	complex[reflect.Map] = &Map{}
 }
 
-func New(data []byte, location int, typeName string, registry interfaces.ITypeRegistry) *SObject {
+func New(data []byte, location int, typeName string, registry interfaces.IRegistry) *SObject {
 	obj := &SObject{}
 	obj.data = data
 	obj.location = location
@@ -67,7 +69,7 @@ func (obj *SObject) add(any interface{}) error {
 	c, cOK := complex[kind]
 
 	if !pOK && !cOK {
-		return interfaces.Error("Did not find any Object for kind", kind.String())
+		return Log.Error("Did not find any Object for kind", kind.String())
 	}
 
 	obj.addKind(kind)
@@ -90,7 +92,7 @@ func (obj *SObject) Get() (interface{}, error) {
 	c, cOK := complex[kind]
 
 	if !pOK && !cOK {
-		return nil, interfaces.Error("Did not find any Object for kind", kind.String())
+		return nil, Log.Error("Did not find any Object for kind", kind.String())
 	}
 
 	var d interface{}

@@ -35,7 +35,7 @@ func (this *Slice) add(any interface{}) ([]byte, int) {
 	return s, len(s)
 }
 
-func (this *Slice) get(data []byte, location int, typeName string, registry interfaces.ITypeRegistry) (interface{}, int) {
+func (this *Slice) get(data []byte, location int, typeName string, registry interfaces.IRegistry) (interface{}, int) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {
