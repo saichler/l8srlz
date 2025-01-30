@@ -63,7 +63,7 @@ func (obj *SObject) Location() int {
 	return obj.location
 }
 
-func (obj *SObject) add(any interface{}) error {
+func (obj *SObject) Add(any interface{}) error {
 	kind := reflect.ValueOf(any).Kind()
 	p, pOK := primitives[kind]
 	c, cOK := complex[kind]

@@ -28,7 +28,7 @@ func (this *Slice) add(any interface{}) ([]byte, int) {
 		for i := 0; i < slice.Len(); i++ {
 			enc := New([]byte{}, 0, "", nil)
 			element := slice.Index(i).Interface()
-			enc.add(element)
+			enc.Add(element)
 			s = append(s, enc.Data()...)
 		}
 	}

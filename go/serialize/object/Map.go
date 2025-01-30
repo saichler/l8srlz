@@ -23,9 +23,9 @@ func (this *Map) add(any interface{}) ([]byte, int) {
 
 	for _, key := range keys {
 		enc := New([]byte{}, 0, "", nil)
-		enc.add(key.Interface())
+		enc.Add(key.Interface())
 		element := mapp.MapIndex(key).Interface()
-		enc.add(element)
+		enc.Add(element)
 		s = append(s, enc.Data()...)
 	}
 	return s, len(s)
