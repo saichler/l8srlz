@@ -7,7 +7,7 @@ import (
 
 type Map struct{}
 
-func (this *Map) add(any interface{}) ([]byte, int) {
+func (this *Map) add(any interface{}, log interfaces.ILogger) ([]byte, int) {
 	if any == nil {
 		sizeBytes, _ := sizeObjectType.add(int32(-1))
 		return sizeBytes, 4
@@ -22,7 +22,7 @@ func (this *Map) add(any interface{}) ([]byte, int) {
 	keys := mapp.MapKeys()
 
 	for _, key := range keys {
-		enc := New([]byte{}, 0, "", nil)
+		enc := NewEncode([]byte{}, 0, log)
 		enc.Add(key.Interface())
 		element := mapp.MapIndex(key).Interface()
 		enc.Add(element)
@@ -31,7 +31,7 @@ func (this *Map) add(any interface{}) ([]byte, int) {
 	return s, len(s)
 }
 
-func (this *Map) get(data []byte, location int, typeName string, registry interfaces.IRegistry) (interface{}, int) {
+func (this *Map) get(data []byte, location int, typeName string, registry interfaces.IRegistry, log interfaces.ILogger) (interface{}, int) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {
@@ -39,7 +39,7 @@ func (this *Map) get(data []byte, location int, typeName string, registry interf
 	}
 	location += 4
 
-	enc := New(data, location, typeName, registry)
+	enc := NewDecode(data, location, typeName, registry, log)
 	mapp := make(map[interface{}]interface{})
 	var mapKeyType reflect.Type
 	var mapValueType reflect.Type

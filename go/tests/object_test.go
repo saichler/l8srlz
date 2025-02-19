@@ -8,13 +8,13 @@ import (
 )
 
 func testType(val interface{}) (interface{}, error) {
-	e := object.New([]byte{}, 0, "", globals.Registry())
+	e := object.NewEncode([]byte{}, 0, log)
 	err := e.Add(val)
 	if err != nil {
 		return nil, err
 	}
 	data := e.Data()
-	e = object.New(data, 0, "", globals.Registry())
+	e = object.NewDecode(data, 0, "", globals.Registry(), log)
 	dval, err := e.Get()
 	if err != nil {
 		return nil, err

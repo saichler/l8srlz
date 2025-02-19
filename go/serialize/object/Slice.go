@@ -7,7 +7,7 @@ import (
 
 type Slice struct{}
 
-func (this *Slice) add(any interface{}) ([]byte, int) {
+func (this *Slice) add(any interface{}, log interfaces.ILogger) ([]byte, int) {
 	if any == nil {
 		sizeBytes, _ := sizeObjectType.add(int32(-1))
 		return sizeBytes, 4
@@ -26,7 +26,7 @@ func (this *Slice) add(any interface{}) ([]byte, int) {
 		s = append(s, data...)
 	} else {
 		for i := 0; i < slice.Len(); i++ {
-			enc := New([]byte{}, 0, "", nil)
+			enc := NewEncode([]byte{}, 0, log)
 			element := slice.Index(i).Interface()
 			enc.Add(element)
 			s = append(s, enc.Data()...)
@@ -35,14 +35,14 @@ func (this *Slice) add(any interface{}) ([]byte, int) {
 	return s, len(s)
 }
 
-func (this *Slice) get(data []byte, location int, typeName string, registry interfaces.IRegistry) (interface{}, int) {
+func (this *Slice) get(data []byte, location int, typeName string, registry interfaces.IRegistry, log interfaces.ILogger) (interface{}, int) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {
 		return nil, 4
 	}
 	location += 4
-	enc := New(data, location, typeName, registry)
+	enc := NewDecode(data, location, typeName, registry, log)
 
 	if data[location] == 1 {
 		location++

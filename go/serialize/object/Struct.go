@@ -9,7 +9,7 @@ import (
 type Struct struct {
 }
 
-func (this *Struct) add(any interface{}) ([]byte, int) {
+func (this *Struct) add(any interface{}, log interfaces.ILogger) ([]byte, int) {
 
 	if any == nil || reflect.ValueOf(any).IsNil() {
 		sizeBytes, _ := sizeObjectType.add(int32(-1))
@@ -22,7 +22,7 @@ func (this *Struct) add(any interface{}) ([]byte, int) {
 	pb := any.(proto.Message)
 	pbData, err := proto.Marshal(pb)
 	if err != nil {
-		Log.Error("Failed To marshal proto ", typeName, " in protobuf object:", err)
+		log.Error("Failed To marshal proto ", typeName, " in protobuf object:", err)
 		return []byte{}, 0
 	}
 
@@ -34,7 +34,7 @@ func (this *Struct) add(any interface{}) ([]byte, int) {
 	return data, len(data)
 }
 
-func (this *Struct) get(data []byte, location int, typeName string, registry interfaces.IRegistry) (interface{}, int) {
+func (this *Struct) get(data []byte, location int, typeName string, registry interfaces.IRegistry, log interfaces.ILogger) (interface{}, int) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {
@@ -45,13 +45,13 @@ func (this *Struct) get(data []byte, location int, typeName string, registry int
 	typeName = typeN.(string)
 	info, err := registry.Info(typeName)
 	if err != nil {
-		Log.Error("Unknown proto name ", typeName, " in registry, please register it.")
+		log.Error("Unknown proto name ", typeName, " in registry, please register it.")
 		return []byte{}, 0
 	}
 
 	pb, err := info.NewInstance()
 	if err != nil {
-		Log.Error("Unknown proto name ", typeName, " in registry, please register it.")
+		log.Error("Unknown proto name ", typeName, " in registry, please register it.")
 		return []byte{}, 0
 	}
 
@@ -63,7 +63,7 @@ func (this *Struct) get(data []byte, location int, typeName string, registry int
 
 	err = proto.Unmarshal(protoData, pb.(proto.Message))
 	if err != nil {
-		Log.Error("Failed To unmarshal proto ", typeName, ":", err)
+		log.Error("Failed To unmarshal proto ", typeName, ":", err)
 		return []byte{}, 0
 	}
 	return pb, typeSize + 4 + int(size)

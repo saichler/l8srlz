@@ -5,11 +5,12 @@ import (
 	"reflect"
 )
 
-type SObject struct {
+type Object struct {
 	data     []byte
 	location int
 	typeName string
 	registry interfaces.IRegistry
+	log      interfaces.ILogger
 }
 
 type Primitive interface {
@@ -18,8 +19,8 @@ type Primitive interface {
 }
 
 type Complex interface {
-	add(interface{}) ([]byte, int)
-	get([]byte, int, string, interfaces.IRegistry) (interface{}, int)
+	add(interface{}, interfaces.ILogger) ([]byte, int)
+	get([]byte, int, string, interfaces.IRegistry, interfaces.ILogger) (interface{}, int)
 }
 
 var primitives = make(map[reflect.Kind]Primitive)
@@ -27,8 +28,6 @@ var complex = make(map[reflect.Kind]Complex)
 
 var sizeObjectType = &Int32{}
 var stringObjectType = &String{}
-
-var Log interfaces.ILogger
 
 func init() {
 	primitives[reflect.Int] = &Int{}
@@ -46,30 +45,35 @@ func init() {
 	complex[reflect.Map] = &Map{}
 }
 
-func New(data []byte, location int, typeName string, registry interfaces.IRegistry) *SObject {
-	obj := &SObject{}
+func NewEncode(data []byte, location int, log interfaces.ILogger) *Object {
+	return NewDecode(data, location, "", nil, log)
+}
+
+func NewDecode(data []byte, location int, typeName string, registry interfaces.IRegistry, log interfaces.ILogger) *Object {
+	obj := &Object{}
 	obj.data = data
 	obj.location = location
 	obj.registry = registry
+	obj.log = log
 	obj.typeName = typeName
 	return obj
 }
 
-func (obj *SObject) Data() []byte {
+func (obj *Object) Data() []byte {
 	return obj.data
 }
 
-func (obj *SObject) Location() int {
+func (obj *Object) Location() int {
 	return obj.location
 }
 
-func (obj *SObject) Add(any interface{}) error {
+func (obj *Object) Add(any interface{}) error {
 	kind := reflect.ValueOf(any).Kind()
 	p, pOK := primitives[kind]
 	c, cOK := complex[kind]
 
 	if !pOK && !cOK {
-		return Log.Error("Did not find any Object for kind", kind.String())
+		return obj.log.Error("Did not find any Object for kind", kind.String())
 	}
 
 	obj.addKind(kind)
@@ -79,20 +83,20 @@ func (obj *SObject) Add(any interface{}) error {
 	if pOK {
 		b, l = p.add(any)
 	} else {
-		b, l = c.add(any)
+		b, l = c.add(any, obj.log)
 	}
 	obj.location += l
 	obj.data = append(obj.data, b...)
 	return nil
 }
 
-func (obj *SObject) Get() (interface{}, error) {
+func (obj *Object) Get() (interface{}, error) {
 	kind := obj.getKind()
 	p, pOK := primitives[kind]
 	c, cOK := complex[kind]
 
 	if !pOK && !cOK {
-		return nil, Log.Error("Did not find any Object for kind", kind.String())
+		return nil, obj.log.Error("Did not find any Object for kind", kind.String())
 	}
 
 	var d interface{}
@@ -101,20 +105,20 @@ func (obj *SObject) Get() (interface{}, error) {
 	if pOK {
 		d, l = p.get(obj.data, obj.location)
 	} else {
-		d, l = c.get(obj.data, obj.location, obj.typeName, obj.registry)
+		d, l = c.get(obj.data, obj.location, obj.typeName, obj.registry, obj.log)
 	}
 
 	obj.location += l
 	return d, nil
 }
 
-func (obj *SObject) addKind(kind reflect.Kind) {
+func (obj *Object) addKind(kind reflect.Kind) {
 	b, l := sizeObjectType.add(int32(kind))
 	obj.location += l
 	obj.data = append(obj.data, b...)
 }
 
-func (obj *SObject) getKind() reflect.Kind {
+func (obj *Object) getKind() reflect.Kind {
 	i, l := sizeObjectType.get(obj.data, obj.location)
 	obj.location += l
 	return reflect.Kind(i.(int32))
