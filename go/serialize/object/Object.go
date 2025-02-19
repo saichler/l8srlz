@@ -1,6 +1,7 @@
 package object
 
 import (
+	"errors"
 	"github.com/saichler/shared/go/share/interfaces"
 	"reflect"
 )
@@ -10,7 +11,6 @@ type Object struct {
 	location int
 	typeName string
 	registry interfaces.IRegistry
-	log      interfaces.ILogger
 }
 
 type Primitive interface {
@@ -19,8 +19,8 @@ type Primitive interface {
 }
 
 type Complex interface {
-	add(interface{}, interfaces.ILogger) ([]byte, int)
-	get([]byte, int, string, interfaces.IRegistry, interfaces.ILogger) (interface{}, int)
+	add(interface{}) ([]byte, int, error)
+	get([]byte, int, string, interfaces.IRegistry) (interface{}, int, error)
 }
 
 var primitives = make(map[reflect.Kind]Primitive)
@@ -45,16 +45,15 @@ func init() {
 	complex[reflect.Map] = &Map{}
 }
 
-func NewEncode(data []byte, location int, log interfaces.ILogger) *Object {
-	return NewDecode(data, location, "", nil, log)
+func NewEncode(data []byte, location int) *Object {
+	return NewDecode(data, location, "", nil)
 }
 
-func NewDecode(data []byte, location int, typeName string, registry interfaces.IRegistry, log interfaces.ILogger) *Object {
+func NewDecode(data []byte, location int, typeName string, registry interfaces.IRegistry) *Object {
 	obj := &Object{}
 	obj.data = data
 	obj.location = location
 	obj.registry = registry
-	obj.log = log
 	obj.typeName = typeName
 	return obj
 }
@@ -73,21 +72,22 @@ func (obj *Object) Add(any interface{}) error {
 	c, cOK := complex[kind]
 
 	if !pOK && !cOK {
-		return obj.log.Error("Did not find any Object for kind", kind.String())
+		return errors.New("Did not find any Object for kind " + kind.String())
 	}
 
 	obj.addKind(kind)
 	var b []byte
 	var l int
+	var e error
 
 	if pOK {
 		b, l = p.add(any)
 	} else {
-		b, l = c.add(any, obj.log)
+		b, l, e = c.add(any)
 	}
 	obj.location += l
 	obj.data = append(obj.data, b...)
-	return nil
+	return e
 }
 
 func (obj *Object) Get() (interface{}, error) {
@@ -96,20 +96,21 @@ func (obj *Object) Get() (interface{}, error) {
 	c, cOK := complex[kind]
 
 	if !pOK && !cOK {
-		return nil, obj.log.Error("Did not find any Object for kind", kind.String())
+		return nil, errors.New("Did not find any Object for kind " + kind.String())
 	}
 
 	var d interface{}
 	var l int
+	var e error
 
 	if pOK {
 		d, l = p.get(obj.data, obj.location)
 	} else {
-		d, l = c.get(obj.data, obj.location, obj.typeName, obj.registry, obj.log)
+		d, l, e = c.get(obj.data, obj.location, obj.typeName, obj.registry)
 	}
 
 	obj.location += l
-	return d, nil
+	return d, e
 }
 
 func (obj *Object) addKind(kind reflect.Kind) {

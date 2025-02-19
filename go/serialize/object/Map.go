@@ -7,39 +7,39 @@ import (
 
 type Map struct{}
 
-func (this *Map) add(any interface{}, log interfaces.ILogger) ([]byte, int) {
+func (this *Map) add(any interface{}) ([]byte, int, error) {
 	if any == nil {
 		sizeBytes, _ := sizeObjectType.add(int32(-1))
-		return sizeBytes, 4
+		return sizeBytes, 4, nil
 	}
 	mapp := reflect.ValueOf(any)
 	if mapp.Len() == 0 {
 		sizeBytes, _ := sizeObjectType.add(int32(-1))
-		return sizeBytes, 4
+		return sizeBytes, 4, nil
 	}
 
 	s, _ := sizeObjectType.add(int32(mapp.Len()))
 	keys := mapp.MapKeys()
 
 	for _, key := range keys {
-		enc := NewEncode([]byte{}, 0, log)
+		enc := NewEncode([]byte{}, 0)
 		enc.Add(key.Interface())
 		element := mapp.MapIndex(key).Interface()
 		enc.Add(element)
 		s = append(s, enc.Data()...)
 	}
-	return s, len(s)
+	return s, len(s), nil
 }
 
-func (this *Map) get(data []byte, location int, typeName string, registry interfaces.IRegistry, log interfaces.ILogger) (interface{}, int) {
+func (this *Map) get(data []byte, location int, typeName string, registry interfaces.IRegistry) (interface{}, int, error) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {
-		return nil, 4
+		return nil, 4, nil
 	}
 	location += 4
 
-	enc := NewDecode(data, location, typeName, registry, log)
+	enc := NewDecode(data, location, typeName, registry)
 	mapp := make(map[interface{}]interface{})
 	var mapKeyType reflect.Type
 	var mapValueType reflect.Type
@@ -66,5 +66,5 @@ func (this *Map) get(data []byte, location int, typeName string, registry interf
 		}
 	}
 
-	return newMap.Interface(), enc.Location()
+	return newMap.Interface(), enc.Location(), nil
 }
