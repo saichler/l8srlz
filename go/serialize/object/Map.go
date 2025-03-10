@@ -1,7 +1,7 @@
 package object
 
 import (
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/types/go/common"
 	"reflect"
 )
 
@@ -31,7 +31,7 @@ func (this *Map) add(any interface{}) ([]byte, int, error) {
 	return s, len(s), nil
 }
 
-func (this *Map) get(data []byte, location int, typeName string, registry interfaces.IRegistry) (interface{}, int, error) {
+func (this *Map) get(data []byte, location int, typeName string, registry common.IRegistry) (interface{}, int, error) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {

@@ -2,7 +2,7 @@ package object
 
 import (
 	"errors"
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/types/go/common"
 	"google.golang.org/protobuf/proto"
 	"reflect"
 )
@@ -34,7 +34,7 @@ func (this *Struct) add(any interface{}) ([]byte, int, error) {
 	return data, len(data), nil
 }
 
-func (this *Struct) get(data []byte, location int, typeName string, registry interfaces.IRegistry) (interface{}, int, error) {
+func (this *Struct) get(data []byte, location int, typeName string, registry common.IRegistry) (interface{}, int, error) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {

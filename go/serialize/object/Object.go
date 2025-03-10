@@ -2,7 +2,7 @@ package object
 
 import (
 	"errors"
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/types/go/common"
 	"reflect"
 )
 
@@ -10,7 +10,7 @@ type Object struct {
 	data     []byte
 	location int
 	typeName string
-	registry interfaces.IRegistry
+	registry common.IRegistry
 }
 
 type Primitive interface {
@@ -20,7 +20,7 @@ type Primitive interface {
 
 type Complex interface {
 	add(interface{}) ([]byte, int, error)
-	get([]byte, int, string, interfaces.IRegistry) (interface{}, int, error)
+	get([]byte, int, string, common.IRegistry) (interface{}, int, error)
 }
 
 var primitives = make(map[reflect.Kind]Primitive)
@@ -49,7 +49,7 @@ func NewEncode(data []byte, location int) *Object {
 	return NewDecode(data, location, "", nil)
 }
 
-func NewDecode(data []byte, location int, typeName string, registry interfaces.IRegistry) *Object {
+func NewDecode(data []byte, location int, typeName string, registry common.IRegistry) *Object {
 	obj := &Object{}
 	obj.data = data
 	obj.location = location
