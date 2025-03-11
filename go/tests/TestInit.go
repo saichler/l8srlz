@@ -18,8 +18,7 @@ func init() {
 	config := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  "tests",
-		Topics:      map[string]bool{}}
+		LocalAlias:  "tests"}
 	secure, err := common.LoadSecurityProvider("security.so")
 	if err != nil {
 		panic(err)

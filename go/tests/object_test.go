@@ -2,7 +2,7 @@ package tests
 
 import (
 	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/shared/go/tests"
+	"github.com/saichler/types/go/testtypes"
 	"strconv"
 	"testing"
 )
@@ -135,7 +135,7 @@ func TestPbString(t *testing.T) {
 }
 
 func TestProtoType(t *testing.T) {
-	val := &tests.TestProto{}
+	val := &testtypes.TestProto{}
 	val.MyString = "MyString"
 	globals.Registry().Register(val)
 	dval, err := testType(val)
@@ -143,7 +143,7 @@ func TestProtoType(t *testing.T) {
 		t.Fail()
 		return
 	}
-	res := dval.(*tests.TestProto)
+	res := dval.(*testtypes.TestProto)
 	if res.MyString != val.MyString {
 		log.Error("Value do not match:", res, " and ", val)
 		t.Fail()
@@ -191,21 +191,21 @@ func TestSliceOfString(t *testing.T) {
 }
 
 func TestSliceOfProto(t *testing.T) {
-	proto1 := &tests.TestProto{}
+	proto1 := &testtypes.TestProto{}
 	proto1.MyString = "UUID-1"
 
-	proto2 := &tests.TestProto{}
+	proto2 := &testtypes.TestProto{}
 	proto2.MyString = "UUID-2"
 
 	globals.Registry().Register(proto1)
 
-	val := []*tests.TestProto{proto1, proto2}
+	val := []*testtypes.TestProto{proto1, proto2}
 	dval, err := testType(val)
 	if err != nil {
 		t.Fail()
 		return
 	}
-	res := dval.([]*tests.TestProto)
+	res := dval.([]*testtypes.TestProto)
 	if len(val) != len(res) {
 		log.Error("Value do not match:", res, " and ", val)
 		t.Fail()
@@ -219,7 +219,7 @@ func TestSliceOfProto(t *testing.T) {
 }
 
 func TestNilSlice(t *testing.T) {
-	var val []*tests.TestProto
+	var val []*testtypes.TestProto
 	dval, err := testType(val)
 	if err != nil {
 		t.Fail()
@@ -233,7 +233,7 @@ func TestNilSlice(t *testing.T) {
 }
 
 func TestNilProto(t *testing.T) {
-	var val *tests.TestProto
+	var val *testtypes.TestProto
 	dval, err := testType(val)
 	if err != nil {
 		t.Fail()
@@ -247,21 +247,21 @@ func TestNilProto(t *testing.T) {
 }
 
 func TestSliceOfProtoWithNil(t *testing.T) {
-	proto1 := &tests.TestProto{}
+	proto1 := &testtypes.TestProto{}
 	proto1.MyString = "UUID-1"
 
-	proto2 := &tests.TestProto{}
+	proto2 := &testtypes.TestProto{}
 	proto2.MyString = "UUID-2"
 
 	globals.Registry().Register(proto1)
 
-	val := []*tests.TestProto{proto1, nil, proto2}
+	val := []*testtypes.TestProto{proto1, nil, proto2}
 	dval, err := testType(val)
 	if err != nil {
 		t.Fail()
 		return
 	}
-	res := dval.([]*tests.TestProto)
+	res := dval.([]*testtypes.TestProto)
 	if len(val) != len(res) {
 		log.Error("Value do not match:", res, " and ", val)
 		t.Fail()
@@ -324,15 +324,15 @@ func TestMapOfInt322String(t *testing.T) {
 }
 
 func TestMapOfString2Proto(t *testing.T) {
-	proto1 := &tests.TestProto{}
+	proto1 := &testtypes.TestProto{}
 	proto1.MyString = "UUID-1"
 
-	proto2 := &tests.TestProto{}
+	proto2 := &testtypes.TestProto{}
 	proto2.MyString = "UUID-2"
 
 	globals.Registry().Register(proto1)
 
-	val := make(map[string]*tests.TestProto)
+	val := make(map[string]*testtypes.TestProto)
 
 	val[proto1.MyString] = proto1
 	val[proto2.MyString] = proto2
@@ -342,7 +342,7 @@ func TestMapOfString2Proto(t *testing.T) {
 		t.Fail()
 		return
 	}
-	res := dval.(map[string]*tests.TestProto)
+	res := dval.(map[string]*testtypes.TestProto)
 	if len(val) != len(res) {
 		log.Error("Value do not match:", res, " and ", val)
 		t.Fail()
@@ -356,15 +356,15 @@ func TestMapOfString2Proto(t *testing.T) {
 }
 
 func TestMapOfString2ProtoWithNil(t *testing.T) {
-	proto1 := &tests.TestProto{}
+	proto1 := &testtypes.TestProto{}
 	proto1.MyString = "UUID-1"
 
-	proto2 := &tests.TestProto{}
+	proto2 := &testtypes.TestProto{}
 	proto2.MyString = "UUID-2"
 
 	globals.Registry().Register(proto1)
 
-	val := make(map[string]*tests.TestProto)
+	val := make(map[string]*testtypes.TestProto)
 
 	val[proto1.MyString] = proto1
 	val[proto2.MyString] = proto2
@@ -375,7 +375,7 @@ func TestMapOfString2ProtoWithNil(t *testing.T) {
 		t.Fail()
 		return
 	}
-	res := dval.(map[string]*tests.TestProto)
+	res := dval.(map[string]*testtypes.TestProto)
 	if len(val) != len(res) {
 		log.Error("Value do not match:", res, " and ", val)
 		t.Fail()
