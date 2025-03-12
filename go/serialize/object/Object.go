@@ -41,6 +41,7 @@ func init() {
 	primitives[reflect.Bool] = &Bool{}
 
 	complex[reflect.Ptr] = &Struct{}
+	complex[reflect.Struct] = &Struct{}
 	complex[reflect.Slice] = &Slice{}
 	complex[reflect.Map] = &Map{}
 }

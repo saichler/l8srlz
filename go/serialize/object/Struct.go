@@ -11,13 +11,21 @@ type Struct struct {
 }
 
 func (this *Struct) add(any interface{}) ([]byte, int, error) {
-
-	if any == nil || reflect.ValueOf(any).IsNil() {
+	if any == nil {
 		sizeBytes, _ := sizeObjectType.add(int32(-1))
 		return sizeBytes, 4, nil
 	}
 
-	typ := reflect.ValueOf(any).Elem().Type()
+	val := reflect.ValueOf(any)
+	if val.Kind() == reflect.Ptr {
+		if val.IsNil() {
+			sizeBytes, _ := sizeObjectType.add(int32(-1))
+			return sizeBytes, 4, nil
+		}
+		val = val.Elem()
+	}
+
+	typ := val.Type()
 	typeName := typ.Name()
 
 	pb := any.(proto.Message)
