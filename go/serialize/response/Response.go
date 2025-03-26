@@ -24,6 +24,14 @@ func (this *Response) SetError(err error) {
 	this.err = err
 }
 
+func (this *Response) List() []interface{} {
+	return this.list
+}
+
+func (this *Response) Error() error {
+	return this.err
+}
+
 func (this *Response) ToProto() *types.Response {
 	response := &types.Response{}
 	if this.list != nil {
