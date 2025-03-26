@@ -1,9 +1,9 @@
 package tests
 
 import (
+	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/shared/go/share/registry"
 	"github.com/saichler/shared/go/share/resources"
-	. "github.com/saichler/shared/go/tests/infra"
 	"github.com/saichler/types/go/common"
 	"github.com/saichler/types/go/types"
 )

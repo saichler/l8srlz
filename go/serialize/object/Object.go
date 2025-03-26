@@ -1,6 +1,7 @@
 package object
 
 import (
+	"encoding/base64"
 	"errors"
 	"github.com/saichler/types/go/common"
 	"reflect"
@@ -123,4 +124,13 @@ func (obj *Object) getKind() reflect.Kind {
 	i, l := sizeObjectType.get(obj.data, obj.location)
 	obj.location += l
 	return reflect.Kind(i.(int32))
+}
+
+func (obj *Object) Base64() string {
+	return base64.StdEncoding.EncodeToString(obj.data)
+}
+
+func FromBase64(b64 string) ([]byte, error) {
+	return base64.StdEncoding.DecodeString(b64)
+
 }
