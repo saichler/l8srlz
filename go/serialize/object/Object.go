@@ -133,20 +133,19 @@ func FromBase64(b64 string) ([]byte, error) {
 
 }
 
-func DataOf(elem interface{}) []byte {
+func DataOf(elem interface{}) ([]byte, error) {
 	if elem == nil {
-		return nil
+		return nil, nil
 	}
 	obj := NewEncode([]byte{}, 0)
-	obj.Add(elem)
-	return obj.Data()
+	err := obj.Add(elem)
+	return obj.Data(), err
 }
 
-func ElemOf(data []byte, r common.IRegistry) interface{} {
+func ElemOf(data []byte, r common.IRegistry) (interface{}, error) {
 	if data == nil {
-		return nil
+		return nil, nil
 	}
 	obj := NewDecode(data, 0, r)
-	elem, _ := obj.Get()
-	return elem
+	return obj.Get()
 }

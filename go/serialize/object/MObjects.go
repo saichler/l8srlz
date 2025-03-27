@@ -67,29 +67,44 @@ func (this *MObjects) Error() error {
 	return this.objects[0].error
 }
 
-func (this *MObjects) Serialize() *types.MObjects {
+func (this *MObjects) Serialize() (*types.MObjects, error) {
 	result := &types.MObjects{}
 	result.Objects = make([]*types.MObject, len(this.objects))
+	var err error
 	for i, o := range this.objects {
 		mo := &types.MObject{}
-		mo.Key = DataOf(o.key)
-		mo.Data = DataOf(o.element)
+		mo.Key, err = DataOf(o.key)
+		if err != nil {
+			return nil, err
+		}
+		mo.Data, err = DataOf(o.element)
+		if err != nil {
+			return nil, err
+		}
 		if o.error != nil {
 			mo.ErrorMessage = o.error.Error()
 		}
 		result.Objects[i] = mo
 	}
-	return result
+	return result, nil
 }
 
-func (this *MObjects) Deserialize(objs *types.MObjects, r common.IRegistry) {
+func (this *MObjects) Deserialize(objs *types.MObjects, r common.IRegistry) error {
 	this.objects = make([]*MObject, len(objs.Objects))
+	var err error
 	for i, o := range objs.Objects {
 		this.objects[i] = &MObject{}
-		this.objects[i].element = ElemOf(o.Data, r)
-		this.objects[i].key = ElemOf(o.Data, r)
+		this.objects[i].element, err = ElemOf(o.Data, r)
+		if err != nil {
+			return err
+		}
+		this.objects[i].key, err = ElemOf(o.Data, r)
+		if err != nil {
+			return err
+		}
 		if o.ErrorMessage != "" {
 			this.objects[i].error = errors.New(o.ErrorMessage)
 		}
 	}
+	return nil
 }
