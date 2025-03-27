@@ -1,9 +1,8 @@
 package serializers
 
 import (
-	"errors"
+	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/types/go/common"
-	"google.golang.org/protobuf/proto"
 )
 
 type ProtoBuffBinary struct{}
@@ -13,29 +12,12 @@ func (s *ProtoBuffBinary) Mode() common.SerializerMode {
 }
 
 func (s *ProtoBuffBinary) Marshal(any interface{}, registry common.IRegistry) ([]byte, error) {
-	if any == nil {
-		return nil, errors.New("attempting to marshal nil interface")
-	}
-
-	pb, ok := any.(proto.Message)
-	if !ok {
-		return nil, errors.New("interface is no a protobuf message")
-	}
-	return proto.Marshal(pb)
+	obj := object.NewEncode([]byte{}, 0)
+	obj.Add(any)
+	return obj.Data(), nil
 }
 
-func (s *ProtoBuffBinary) Unmarshal(data []byte, typeName string, registry common.IRegistry) (interface{}, error) {
-	info, err := registry.Info(typeName)
-	if err != nil {
-		return nil, errors.New("No type info found for type " + typeName)
-	}
-
-	ins, err := info.NewInstance()
-	if err != nil {
-		return nil, err
-	}
-
-	pb := ins.(proto.Message)
-	err = proto.Unmarshal(data, pb)
-	return pb, err
+func (s *ProtoBuffBinary) Unmarshal(data []byte, registry common.IRegistry) (interface{}, error) {
+	obj := object.NewDecode(data, 0, registry)
+	return obj.Get()
 }
