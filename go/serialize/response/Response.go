@@ -84,6 +84,6 @@ func NewSl(pb interface{}) *Response {
 	return resp
 }
 
-func NewErr(err error) *Response {
-	return &Response{err: err}
+func NewErr(errMessage string) *Response {
+	return &Response{err: errors.New(errMessage)}
 }
