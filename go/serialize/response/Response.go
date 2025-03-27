@@ -45,7 +45,7 @@ func (this *Response) Elem() interface{} {
 	return this.elems[0]
 }
 
-func (this *Response) Err() error {
+func (this *Response) Error() error {
 	if this == nil {
 		return nil
 	}
