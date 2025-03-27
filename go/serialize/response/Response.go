@@ -87,3 +87,7 @@ func NewSl(pb interface{}) *Response {
 func NewErr(errMessage string) *Response {
 	return &Response{err: errors.New(errMessage)}
 }
+
+func NewSWE(pb interface{}, err error) *Response {
+	return &Response{err: err, list: []interface{}{pb}}
+}
