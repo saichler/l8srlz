@@ -16,19 +16,19 @@ type MObject struct {
 	error   error
 }
 
-func New(err string, elem interface{}) *MObjects {
+func New(err error, elem interface{}) *MObjects {
 	result := &MObjects{}
 	result.objects = make([]*MObject, 1)
 	result.objects[0] = &MObject{}
-	if err != "" {
-		result.objects[0].error = errors.New(err)
+	if err != nil {
+		result.objects[0].error = err
 	}
 	result.objects[0].element = elem
 	return result
 }
 
 func NewError(err string) *MObjects {
-	return New(err, nil)
+	return New(errors.New(err), nil)
 }
 
 func (this *MObjects) Elements() []interface{} {
