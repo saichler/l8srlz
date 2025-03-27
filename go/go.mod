@@ -5,7 +5,7 @@ go 1.24.1
 require (
 	github.com/saichler/l8test v0.0.0-20250325003525-28895eb7e99a
 	github.com/saichler/shared/go v0.0.0-20250325020725-e996ba087e15
-	github.com/saichler/types/go v0.0.0-20250326195838-3192a6314df7
+	github.com/saichler/types/go v0.0.0-20250326234517-d70453468c67
 	google.golang.org/protobuf v1.36.6
 )
 

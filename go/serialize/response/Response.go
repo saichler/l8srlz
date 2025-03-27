@@ -66,6 +66,26 @@ func FromProto(response *types.Response, resourcs common.IResources) *Response {
 
 func New(pbs []interface{}, err error) *Response {
 	resp := &Response{err: err}
+	if pbs != nil {
+		resp.list = make([]interface{}, len(pbs))
+		for i, pb := range pbs {
+			resp.list[i] = pb
+		}
+	}
+	if err != nil {
+		resp.err = err
+	}
+	return resp
+}
 
+func NewS(pb interface{}, err error) *Response {
+	resp := &Response{err: err}
+	if pb != nil {
+		resp.list = make([]interface{}, 1)
+		resp.list[0] = pb
+	}
+	if err != nil {
+		resp.err = err
+	}
 	return resp
 }
