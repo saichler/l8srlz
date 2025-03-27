@@ -4,8 +4,8 @@ go 1.24.1
 
 require (
 	github.com/saichler/l8test/go v0.0.0-20250327034246-6deb993af6cc
-	github.com/saichler/shared/go v0.0.0-20250325020725-e996ba087e15
-	github.com/saichler/types/go v0.0.0-20250327032605-b8ca180148e4
+	github.com/saichler/shared/go v0.0.0-20250327144546-dc40bb3ea146
+	github.com/saichler/types/go v0.0.0-20250327153211-3c77946114ce
 	google.golang.org/protobuf v1.36.6
 )
 

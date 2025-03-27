@@ -42,7 +42,7 @@ func (this *Struct) add(any interface{}) ([]byte, int, error) {
 	return data, len(data), nil
 }
 
-func (this *Struct) get(data []byte, location int, typeName string, registry common.IRegistry) (interface{}, int, error) {
+func (this *Struct) get(data []byte, location int, registry common.IRegistry) (interface{}, int, error) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {
@@ -50,7 +50,7 @@ func (this *Struct) get(data []byte, location int, typeName string, registry com
 	}
 
 	typeN, typeSize := stringObjectType.get(data, location)
-	typeName = typeN.(string)
+	typeName := typeN.(string)
 	info, err := registry.Info(typeName)
 	if err != nil {
 		return []byte{}, 0, errors.New("Unknown proto name " + typeName + " in registry, please register it.")

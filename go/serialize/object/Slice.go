@@ -35,14 +35,14 @@ func (this *Slice) add(any interface{}) ([]byte, int, error) {
 	return s, len(s), nil
 }
 
-func (this *Slice) get(data []byte, location int, typeName string, registry common.IRegistry) (interface{}, int, error) {
+func (this *Slice) get(data []byte, location int, registry common.IRegistry) (interface{}, int, error) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {
 		return nil, 4, nil
 	}
 	location += 4
-	enc := NewDecode(data, location, typeName, registry)
+	enc := NewDecode(data, location, registry)
 
 	if data[location] == 1 {
 		location++

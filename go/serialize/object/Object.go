@@ -10,7 +10,6 @@ import (
 type Object struct {
 	data     []byte
 	location int
-	typeName string
 	registry common.IRegistry
 }
 
@@ -21,7 +20,7 @@ type Primitive interface {
 
 type Complex interface {
 	add(interface{}) ([]byte, int, error)
-	get([]byte, int, string, common.IRegistry) (interface{}, int, error)
+	get([]byte, int, common.IRegistry) (interface{}, int, error)
 }
 
 var primitives = make(map[reflect.Kind]Primitive)
@@ -47,15 +46,14 @@ func init() {
 }
 
 func NewEncode(data []byte, location int) *Object {
-	return NewDecode(data, location, "", nil)
+	return NewDecode(data, location, nil)
 }
 
-func NewDecode(data []byte, location int, typeName string, registry common.IRegistry) *Object {
+func NewDecode(data []byte, location int, registry common.IRegistry) *Object {
 	obj := &Object{}
 	obj.data = data
 	obj.location = location
 	obj.registry = registry
-	obj.typeName = typeName
 	return obj
 }
 
@@ -107,7 +105,7 @@ func (obj *Object) Get() (interface{}, error) {
 	if pOK {
 		d, l = p.get(obj.data, obj.location)
 	} else {
-		d, l, e = c.get(obj.data, obj.location, obj.typeName, obj.registry)
+		d, l, e = c.get(obj.data, obj.location, obj.registry)
 	}
 
 	obj.location += l
@@ -133,4 +131,22 @@ func (obj *Object) Base64() string {
 func FromBase64(b64 string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(b64)
 
+}
+
+func DataOf(elem interface{}) []byte {
+	if elem == nil {
+		return nil
+	}
+	obj := NewEncode([]byte{}, 0)
+	obj.Add(elem)
+	return obj.Data()
+}
+
+func ElemOf(data []byte, r common.IRegistry) interface{} {
+	if data == nil {
+		return nil
+	}
+	obj := NewDecode(data, 0, r)
+	elem, _ := obj.Get()
+	return elem
 }

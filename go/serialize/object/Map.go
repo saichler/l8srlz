@@ -31,7 +31,7 @@ func (this *Map) add(any interface{}) ([]byte, int, error) {
 	return s, len(s), nil
 }
 
-func (this *Map) get(data []byte, location int, typeName string, registry common.IRegistry) (interface{}, int, error) {
+func (this *Map) get(data []byte, location int, registry common.IRegistry) (interface{}, int, error) {
 	l, _ := sizeObjectType.get(data, location)
 	size := l.(int32)
 	if size == -1 || size == 0 {
@@ -39,7 +39,7 @@ func (this *Map) get(data []byte, location int, typeName string, registry common
 	}
 	location += 4
 
-	enc := NewDecode(data, location, typeName, registry)
+	enc := NewDecode(data, location, registry)
 	mapp := make(map[interface{}]interface{})
 	var mapKeyType reflect.Type
 	var mapValueType reflect.Type
