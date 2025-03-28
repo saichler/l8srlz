@@ -37,7 +37,7 @@ func New(err error, any interface{}) *MObjects {
 				result.Add(v.MapIndex(key).Interface(), key.Interface(), nil)
 			}
 		} else {
-			result.Add(v.Interface(), nil, nil)
+			result.objects[0].element = any
 		}
 	}
 
