@@ -28,10 +28,12 @@ func New(err error, any interface{}) *MObjects {
 	v := reflect.ValueOf(any)
 	if v.IsValid() {
 		if v.Kind() == reflect.Slice {
+			result.objects = nil
 			for i := 0; i < v.Len(); i++ {
 				result.Add(v.Index(i).Interface(), i, nil)
 			}
 		} else if v.Kind() == reflect.Map {
+			result.objects = nil
 			keys := v.MapKeys()
 			for _, key := range keys {
 				result.Add(v.MapIndex(key).Interface(), key.Interface(), nil)
