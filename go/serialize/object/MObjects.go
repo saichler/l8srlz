@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/saichler/types/go/common"
 	"github.com/saichler/types/go/types"
+	"reflect"
 )
 
 type MObjects struct {
@@ -16,19 +17,43 @@ type MObject struct {
 	error   error
 }
 
-func New(err error, elem interface{}) *MObjects {
+func New(err error, any interface{}) *MObjects {
 	result := &MObjects{}
 	result.objects = make([]*MObject, 1)
 	result.objects[0] = &MObject{}
 	if err != nil {
 		result.objects[0].error = err
 	}
-	result.objects[0].element = elem
+
+	v := reflect.ValueOf(any)
+	if v.IsValid() {
+		if v.Kind() == reflect.Slice {
+			for i := 0; i < v.Len(); i++ {
+				result.Add(v.Index(i).Interface(), i, nil)
+			}
+		} else if v.Kind() == reflect.Map {
+			keys := v.MapKeys()
+			for _, key := range keys {
+				result.Add(v.MapIndex(key).Interface(), key.Interface(), nil)
+			}
+		} else {
+			result.Add(v.Interface(), nil, nil)
+		}
+	}
+
 	return result
 }
 
 func NewError(err string) *MObjects {
 	return New(errors.New(err), nil)
+}
+
+func (this *MObjects) Add(elem interface{}, key interface{}, err error) {
+	mobject := &MObject{element: elem, key: key, error: err}
+	if this.objects == nil {
+		this.objects = make([]*MObject, 0)
+	}
+	this.objects = append(this.objects, mobject)
 }
 
 func (this *MObjects) Elements() []interface{} {
