@@ -125,7 +125,7 @@ func (this *MObjects) Deserialize(objs *types.MObjects, r common.IRegistry) erro
 		if err != nil {
 			return err
 		}
-		this.objects[i].key, err = ElemOf(o.Data, r)
+		this.objects[i].key, err = ElemOf(o.Key, r)
 		if err != nil {
 			return err
 		}
