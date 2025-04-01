@@ -4,8 +4,8 @@
 set -e
 
 # clean up
-rm -rf go.sum
 rm -rf go.mod
+rm -rf go.sum
 rm -rf vendor
 
 # fetch dependencies
