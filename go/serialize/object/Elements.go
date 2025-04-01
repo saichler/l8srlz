@@ -2,12 +2,16 @@ package object
 
 import (
 	"errors"
+	"github.com/saichler/gsql/go/gsql/interpreter"
 	"github.com/saichler/types/go/common"
+	"github.com/saichler/types/go/types"
 	"reflect"
 )
 
 type Elements struct {
 	elements []*Element
+	query    common.IQuery
+	pquery   *types.Query
 }
 
 type Element struct {
@@ -49,8 +53,15 @@ func NewError(err string) *Elements {
 	return New(errors.New(err), nil)
 }
 
-func (this *Elements) Query() common.IQuery {
-	return nil
+func (this *Elements) Query(resources common.IResources) (common.IQuery, error) {
+	var err error
+	if this.query == nil && this.pquery != nil {
+		this.query, err = interpreter.NewFromQuery(this.pquery, resources)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return this.query, nil
 }
 
 func (this *Elements) Add(elem interface{}, key interface{}, err error) {
@@ -119,6 +130,7 @@ func (this *Elements) Serialize() ([]byte, error) {
 			return nil, err
 		}
 	}
+	obj.Add(this.pquery)
 	return obj.Data(), nil
 }
 
@@ -151,5 +163,10 @@ func (this *Elements) Deserialize(data []byte, r common.IRegistry) error {
 		}
 		this.elements[i] = elem
 	}
+	pq, err := obj.Get()
+	if err != nil {
+		return err
+	}
+	this.pquery, _ = pq.(*types.Query)
 	return nil
 }
