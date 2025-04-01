@@ -67,6 +67,9 @@ func (obj *Object) Location() int {
 
 func (obj *Object) Add(any interface{}) error {
 	kind := reflect.ValueOf(any).Kind()
+	if kind == reflect.Invalid {
+		kind = reflect.Ptr
+	}
 	p, pOK := primitives[kind]
 	c, cOK := complex[kind]
 
@@ -91,9 +94,6 @@ func (obj *Object) Add(any interface{}) error {
 
 func (obj *Object) Get() (interface{}, error) {
 	kind := obj.getKind()
-	if kind == reflect.Invalid {
-		kind = reflect.Ptr
-	}
 	p, pOK := primitives[kind]
 	c, cOK := complex[kind]
 
