@@ -20,6 +20,15 @@ type Element struct {
 	error   error
 }
 
+func NewQuery(gsql string, resources common.IResources) (*Elements, error) {
+	q, e := interpreter.NewQuery(gsql, resources)
+	if e != nil {
+		return nil, e
+	}
+	elems := &Elements{pquery: q.Query()}
+	return elems, nil
+}
+
 func New(err error, any interface{}) *Elements {
 	result := &Elements{}
 	result.elements = make([]*Element, 1)
