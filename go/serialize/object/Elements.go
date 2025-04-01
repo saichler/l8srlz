@@ -3,7 +3,6 @@ package object
 import (
 	"errors"
 	"github.com/saichler/types/go/common"
-	"github.com/saichler/types/go/types"
 	"reflect"
 )
 
@@ -98,43 +97,57 @@ func (this *Elements) Error() error {
 	return this.elements[0].error
 }
 
-func (this *Elements) Serialize() (*types.Elements, error) {
-	result := &types.Elements{}
-	result.ElementList = make([]*types.Element, len(this.elements))
+func (this *Elements) Serialize() ([]byte, error) {
+	obj := NewEncode([]byte{}, 0)
+	obj.Add(len(this.elements))
 	var err error
-	for i, o := range this.elements {
-		mo := &types.Element{}
-		mo.Key, err = DataOf(o.key)
+	for _, o := range this.elements {
+		err = obj.Add(o.element)
 		if err != nil {
 			return nil, err
 		}
-		mo.Data, err = DataOf(o.element)
+		err = obj.Add(o.key)
 		if err != nil {
 			return nil, err
 		}
 		if o.error != nil {
-			mo.ErrorMessage = o.error.Error()
+			err = obj.Add(err.Error())
+		} else {
+			err = obj.Add("")
 		}
-		result.ElementList[i] = mo
+		if err != nil {
+			return nil, err
+		}
 	}
-	return result, nil
+	return obj.Data(), nil
 }
 
-func (this *Elements) Deserialize(objs *types.Elements, r common.IRegistry) error {
-	this.elements = make([]*Element, len(objs.ElementList))
-	var err error
-	for i, o := range objs.ElementList {
-		this.elements[i] = &Element{}
-		this.elements[i].element, err = ElemOf(o.Data, r)
+func (this *Elements) Deserialize(data []byte, r common.IRegistry) error {
+	obj := NewDecode(data, 0, r)
+	s, err := obj.Get()
+	if err != nil {
+		return err
+	}
+	size := s.(int)
+	this.elements = make([]*Element, size)
+	var eMsg interface{}
+	for i := 0; i < size; i++ {
+		elem := &Element{}
+		elem.element, err = obj.Get()
 		if err != nil {
 			return err
 		}
-		this.elements[i].key, err = ElemOf(o.Key, r)
+		elem.key, err = obj.Get()
 		if err != nil {
 			return err
 		}
-		if o.ErrorMessage != "" {
-			this.elements[i].error = errors.New(o.ErrorMessage)
+		eMsg, err = obj.Get()
+		if err != nil {
+			return err
+		}
+		errMsg := eMsg.(string)
+		if errMsg != "" {
+			elem.error = errors.New(errMsg)
 		}
 	}
 	return nil
