@@ -50,6 +50,10 @@ func NewError(err string) *Elements {
 	return New(errors.New(err), nil)
 }
 
+func (this *Elements) Query() common.IQuery {
+	return nil
+}
+
 func (this *Elements) Add(elem interface{}, key interface{}, err error) {
 	mobject := &Element{element: elem, key: key, error: err}
 	if this.elements == nil {
