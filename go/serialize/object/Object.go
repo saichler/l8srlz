@@ -91,6 +91,9 @@ func (obj *Object) Add(any interface{}) error {
 
 func (obj *Object) Get() (interface{}, error) {
 	kind := obj.getKind()
+	if kind == reflect.Invalid {
+		kind = reflect.Ptr
+	}
 	p, pOK := primitives[kind]
 	c, cOK := complex[kind]
 

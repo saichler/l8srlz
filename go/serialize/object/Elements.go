@@ -149,6 +149,7 @@ func (this *Elements) Deserialize(data []byte, r common.IRegistry) error {
 		if errMsg != "" {
 			elem.error = errors.New(errMsg)
 		}
+		this.elements[i] = elem
 	}
 	return nil
 }
