@@ -30,6 +30,11 @@ func NewQuery(gsql string, resources common.IResources) (*Elements, error) {
 }
 
 func New(err error, any interface{}) *Elements {
+
+	if reflect.ValueOf(any).Kind() == reflect.Func {
+		panic("any is a function, this is probably a mistake")
+	}
+
 	result := &Elements{}
 	result.elements = make([]*Element, 1)
 	result.elements[0] = &Element{}
