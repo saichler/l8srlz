@@ -123,7 +123,7 @@ func (this *Elements) Error() error {
 }
 
 func (this *Elements) Serialize() ([]byte, error) {
-	obj := NewEncode(nil, 0)
+	obj := NewEncode()
 	obj.Add(len(this.elements))
 	var err error
 	for _, o := range this.elements {

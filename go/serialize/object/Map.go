@@ -18,7 +18,7 @@ func (this *Map) add(any interface{}) ([]byte, int, error) {
 		return sizeBytes, 4, nil
 	}
 
-	obj := NewEncode(nil, 0)
+	obj := NewEncode()
 	obj.appendBytes(sizeObjectType.add(int32(mapp.Len())))
 
 	keys := mapp.MapKeys()
