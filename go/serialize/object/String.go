@@ -4,9 +4,10 @@ type String struct{}
 
 func (this *String) add(any interface{}) ([]byte, int) {
 	str := any.(string)
-	s, _ := sizeObjectType.add(int32(len(str)))
-	s = append(s, []byte(str)...)
-	return s, len(s)
+	obj := NewEncode()
+	obj.appendBytes(sizeObjectType.add(int32(len(str))))
+	obj.appendBytes([]byte(str), len(str))
+	return obj.Data(), obj.Location()
 }
 
 func (this *String) get(data []byte, location int) (interface{}, int) {

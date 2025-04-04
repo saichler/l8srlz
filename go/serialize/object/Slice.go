@@ -18,21 +18,19 @@ func (this *Slice) add(any interface{}) ([]byte, int, error) {
 		return sizeBytes, 4, nil
 	}
 
-	s, _ := sizeObjectType.add(int32(slice.Len()))
+	obj := NewEncode()
+	obj.appendBytes(sizeObjectType.add(int32(slice.Len())))
 
 	data, ok := any.([]byte)
 	if ok {
-		s = append(s, byte(1))
-		s = append(s, data...)
+		obj.appendBytes(data, len(data))
 	} else {
 		for i := 0; i < slice.Len(); i++ {
-			enc := NewEncode([]byte{}, 0)
 			element := slice.Index(i).Interface()
-			enc.Add(element)
-			s = append(s, enc.Data()...)
+			obj.Add(element)
 		}
 	}
-	return s, len(s), nil
+	return obj.Data(), obj.location, nil
 }
 
 func (this *Slice) get(data []byte, location int, registry common.IRegistry) (interface{}, int, error) {

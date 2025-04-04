@@ -136,12 +136,11 @@ func TestPbString(t *testing.T) {
 }
 
 func TestProtoType(t *testing.T) {
-	val := &testtypes.TestProto{}
-	val.MyString = "MyString"
+	val := CreateTestModelInstance(1)
 	globals.Registry().Register(val)
 	dval, err := testType(val)
 	if err != nil {
-		t.Fail()
+		Log.Fail(t, err)
 		return
 	}
 	res := dval.(*testtypes.TestProto)

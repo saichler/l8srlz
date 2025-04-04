@@ -40,12 +40,12 @@ func (this *Struct) add(any interface{}) ([]byte, int, error) {
 		pbData = pbd
 	}
 
-	data, _ := stringObjectType.add(typeName)
-	sizeData, _ := sizeObjectType.add(int32(len(pbData)))
-	data = append(data, sizeData...)
-	data = append(data, pbData...)
+	obj := NewEncode()
+	obj.appendBytes(stringObjectType.add(typeName))
+	obj.appendBytes(sizeObjectType.add(int32(len(pbData))))
+	obj.appendBytes(pbData, len(pbData))
 
-	return data, len(data), nil
+	return obj.Data(), obj.Location(), nil
 }
 
 func (this *Struct) get(data []byte, location int, registry common.IRegistry) (interface{}, int, error) {
@@ -87,6 +87,6 @@ func (this *Struct) get(data []byte, location int, registry common.IRegistry) (i
 			return []byte{}, 0, errors.New("Failed To unmarshal proto " + typeName + ":" + err.Error())
 		}
 	}
-	
+
 	return pb, typeSize + 4 + int(size), nil
 }

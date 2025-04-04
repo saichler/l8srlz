@@ -18,17 +18,17 @@ func (this *Map) add(any interface{}) ([]byte, int, error) {
 		return sizeBytes, 4, nil
 	}
 
-	s, _ := sizeObjectType.add(int32(mapp.Len()))
+	obj := NewEncode(nil, 0)
+	obj.appendBytes(sizeObjectType.add(int32(mapp.Len())))
+
 	keys := mapp.MapKeys()
 
 	for _, key := range keys {
-		enc := NewEncode([]byte{}, 0)
-		enc.Add(key.Interface())
+		obj.Add(key.Interface())
 		element := mapp.MapIndex(key).Interface()
-		enc.Add(element)
-		s = append(s, enc.Data()...)
+		obj.Add(element)
 	}
-	return s, len(s), nil
+	return obj.Data(), obj.location, nil
 }
 
 func (this *Map) get(data []byte, location int, registry common.IRegistry) (interface{}, int, error) {

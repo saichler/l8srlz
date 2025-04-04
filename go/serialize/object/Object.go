@@ -48,8 +48,10 @@ func init() {
 	complex[reflect.Map] = &Map{}
 }
 
-func NewEncode(data []byte, location int) *Object {
-	return NewDecode(data, location, nil)
+func NewEncode() *Object {
+	obj := &Object{}
+	obj.data = make([]byte, 512)
+	return obj
 }
 
 func NewDecode(data []byte, location int, registry common.IRegistry) *Object {
@@ -61,7 +63,7 @@ func NewDecode(data []byte, location int, registry common.IRegistry) *Object {
 }
 
 func (obj *Object) Data() []byte {
-	return obj.data
+	return obj.data[0:obj.location]
 }
 
 func (obj *Object) Location() int {
@@ -90,8 +92,9 @@ func (obj *Object) Add(any interface{}) error {
 	} else {
 		b, l, e = c.add(any)
 	}
-	obj.location += l
-	obj.data = append(obj.data, b...)
+
+	obj.appendBytes(b, l)
+
 	return e
 }
 
@@ -120,8 +123,7 @@ func (obj *Object) Get() (interface{}, error) {
 
 func (obj *Object) addKind(kind reflect.Kind) {
 	b, l := sizeObjectType.add(int32(kind))
-	obj.location += l
-	obj.data = append(obj.data, b...)
+	obj.appendBytes(b, l)
 }
 
 func (obj *Object) getKind() reflect.Kind {
@@ -134,6 +136,16 @@ func (obj *Object) Base64() string {
 	return base64.StdEncoding.EncodeToString(obj.data)
 }
 
+func (obj *Object) appendBytes(data []byte, l int) {
+	if obj.location+len(data) > len(obj.data) {
+		newData := make([]byte, obj.location+len(data)+512)
+		copy(newData[0:len(obj.data)], obj.data)
+		obj.data = newData
+	}
+	copy(obj.data[obj.location:obj.location+l], data)
+	obj.location += l
+}
+
 func FromBase64(b64 string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(b64)
 
@@ -143,7 +155,7 @@ func DataOf(elem interface{}) ([]byte, error) {
 	if elem == nil {
 		return nil, nil
 	}
-	obj := NewEncode([]byte{}, 0)
+	obj := NewEncode()
 	err := obj.Add(elem)
 	return obj.Data(), err
 }
