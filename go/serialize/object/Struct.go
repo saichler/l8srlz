@@ -2,7 +2,6 @@ package object
 
 import (
 	"errors"
-	"github.com/saichler/layer8/go/overlay/protocol"
 	"github.com/saichler/types/go/common"
 	"google.golang.org/protobuf/proto"
 	"reflect"
@@ -31,7 +30,7 @@ func (this *Struct) add(any interface{}) ([]byte, int, error) {
 	var pbData []byte
 
 	if typeName == "Transaction" {
-		pbData, _ = protocol.TSer.Marshal(any, nil)
+		pbData, _ = TransactionSerializer.Marshal(any, nil)
 	} else {
 		pb := any.(proto.Message)
 		pbd, err := proto.Marshal(pb)

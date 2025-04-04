@@ -7,6 +7,9 @@ import (
 	"reflect"
 )
 
+var MessageSerializer common.ISerializer
+var TransactionSerializer common.ISerializer
+
 type Object struct {
 	data     []byte
 	location int
