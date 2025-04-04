@@ -2,6 +2,7 @@ package object
 
 import (
 	"errors"
+	"github.com/saichler/layer8/go/overlay/protocol"
 	"github.com/saichler/types/go/common"
 	"google.golang.org/protobuf/proto"
 	"reflect"
@@ -27,11 +28,17 @@ func (this *Struct) add(any interface{}) ([]byte, int, error) {
 
 	typ := val.Type()
 	typeName := typ.Name()
+	var pbData []byte
 
-	pb := any.(proto.Message)
-	pbData, err := proto.Marshal(pb)
-	if err != nil {
-		return []byte{}, 0, errors.New("Failed To marshal proto " + typeName + " in protobuf object:" + err.Error())
+	if typeName == "Transaction" {
+		pbData, _ = protocol.TSer.Marshal(any, nil)
+	} else {
+		pb := any.(proto.Message)
+		pbd, err := proto.Marshal(pb)
+		if err != nil {
+			return []byte{}, 0, errors.New("Failed To marshal proto " + typeName + " in protobuf object:" + err.Error())
+		}
+		pbData = pbd
 	}
 
 	data, _ := stringObjectType.add(typeName)
