@@ -57,14 +57,20 @@ func (this *Struct) get(data []byte, location int, registry common.IRegistry) (i
 
 	typeN, typeSize := stringObjectType.get(data, location)
 	typeName := typeN.(string)
-	info, err := registry.Info(typeName)
-	if err != nil {
-		return []byte{}, 0, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
-	}
+	var info common.IInfo
+	var err error
+	var pb interface{}
+	isTransaction := typeName == "Transaction"
+	if !isTransaction {
+		info, err = registry.Info(typeName)
+		if err != nil {
+			return []byte{}, 0, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
+		}
 
-	pb, err := info.NewInstance()
-	if err != nil {
-		return []byte{}, 0, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
+		pb, err = info.NewInstance()
+		if err != nil {
+			return []byte{}, 0, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
+		}
 	}
 
 	location += typeSize
@@ -73,9 +79,14 @@ func (this *Struct) get(data []byte, location int, registry common.IRegistry) (i
 	location += 4
 	protoData := data[location : location+int(size)]
 
-	err = proto.Unmarshal(protoData, pb.(proto.Message))
-	if err != nil {
-		return []byte{}, 0, errors.New("Failed To unmarshal proto " + typeName + ":" + err.Error())
+	if isTransaction {
+		pb, _ = TransactionSerializer.Unmarshal(protoData, nil)
+	} else {
+		err = proto.Unmarshal(protoData, pb.(proto.Message))
+		if err != nil {
+			return []byte{}, 0, errors.New("Failed To unmarshal proto " + typeName + ":" + err.Error())
+		}
 	}
+	
 	return pb, typeSize + 4 + int(size), nil
 }
