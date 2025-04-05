@@ -2,18 +2,19 @@ package object
 
 type Bool struct{}
 
-func (this *Bool) add(any interface{}) ([]byte, int) {
+func (this *Bool) add(any interface{}, data *[]byte, location *int) {
 	b := any.(bool)
 	if b {
-		return []byte{1}, 1
+		(*data)[*location] = 1
 	}
-	return []byte{0}, 1
+	*location++
 }
 
-func (this *Bool) get(data []byte, location int) (interface{}, int) {
-	b := data[location]
+func (this *Bool) get(data *[]byte, location *int) interface{} {
+	b := (*data)[*location]
+	*location++
 	if b == 1 {
-		return true, 1
+		return true
 	}
-	return false, 1
+	return false
 }

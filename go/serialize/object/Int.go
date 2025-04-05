@@ -1,31 +1,30 @@
 package object
 
-import (
-	"reflect"
-)
-
 type Int struct{}
 
-func (this *Int) add(any interface{}) ([]byte, int) {
-	i, ok := any.(int)
-	//When it is an int32 derived type
-	if !ok {
-		i = int(reflect.ValueOf(any).Int())
-	}
-	bytes := make([]byte, 4)
-	bytes[3] = byte((i >> 24) & 0xff)
-	bytes[2] = byte((i >> 16) & 0xff)
-	bytes[1] = byte((i >> 8) & 0xff)
-	bytes[0] = byte(i & 0xff)
-
-	return bytes, 4
+func (this *Int) add(any interface{}, data *[]byte, location *int) {
+	i := any.(int64)
+	(*data)[*location] = byte((i >> 56) & 0xff)
+	(*data)[*location+1] = byte((i >> 48) & 0xff)
+	(*data)[*location+2] = byte((i >> 40) & 0xff)
+	(*data)[*location+3] = byte((i >> 32) & 0xff)
+	(*data)[*location+4] = byte((i >> 24) & 0xff)
+	(*data)[*location+5] = byte((i >> 16) & 0xff)
+	(*data)[*location+6] = byte((i >> 8) & 0xff)
+	(*data)[*location+7] = byte((i) & 0xff)
+	*location += 8
 }
 
-func (this *Int) get(data []byte, location int) (interface{}, int) {
-	var result int32
-	result = (0xff&int32(data[location+3])<<24 |
-		0xff&int32(data[location+2])<<16 |
-		0xff&int32(data[location+1])<<8 |
-		0xff&int32(data[location]))
-	return int(result), 4
+func (this *Int) get(data *[]byte, location *int) interface{} {
+	var result int64
+	result = int64(0xff&(*data)[*location])<<56 |
+		int64(0xff&(*data)[*location+1])<<48 |
+		int64(0xff&(*data)[*location+2])<<40 |
+		int64(0xff&(*data)[*location+3])<<32 |
+		int64(0xff&(*data)[*location+4])<<24 |
+		int64(0xff&(*data)[*location+5])<<16 |
+		int64(0xff&(*data)[*location+6])<<8 |
+		int64(0xff&(*data)[*location+7])
+	*location += 8
+	return result
 }

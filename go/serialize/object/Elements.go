@@ -149,7 +149,8 @@ func (this *Elements) Serialize() ([]byte, error) {
 }
 
 func (this *Elements) Deserialize(data []byte, r common.IRegistry) error {
-	obj := NewDecode(data, 0, r)
+	location := 0
+	obj := NewDecode(&data, &location, r)
 	s, err := obj.Get()
 	if err != nil {
 		return err

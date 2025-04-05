@@ -2,18 +2,17 @@ package object
 
 type String struct{}
 
-func (this *String) add(any interface{}) ([]byte, int) {
+func (this *String) add(any interface{}, data *[]byte, location *int) {
 	str := any.(string)
-	obj := NewEncode()
-	obj.appendBytes(sizeObjectType.add(int32(len(str))))
-	obj.appendBytes([]byte(str), len(str))
-	return obj.Data(), obj.Location()
+	sizeObjectType.add(len(str), data, location)
+	copy(*data, str)
+	*location += len(str)
 }
 
-func (this *String) get(data []byte, location int) (interface{}, int) {
-	l, _ := sizeObjectType.get(data, location)
-	size := l.(int32)
-	location += 4
-	s := string(data[location : location+int(size)])
-	return s, len(s) + 4
+func (this *String) get(data *[]byte, location *int) interface{} {
+	l := sizeObjectType.get(data, location)
+	size := int(l.(int32))
+	s := string((*data)[*location : *location+int(size)])
+	*location += size
+	return s
 }

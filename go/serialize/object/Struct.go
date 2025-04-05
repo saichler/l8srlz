@@ -10,17 +10,17 @@ import (
 type Struct struct {
 }
 
-func (this *Struct) add(any interface{}) ([]byte, int, error) {
+func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 	if any == nil {
-		sizeBytes, _ := sizeObjectType.add(int32(-1))
-		return sizeBytes, 4, nil
+		sizeObjectType.add(int32(-1), data, location)
+		return nil
 	}
 
 	val := reflect.ValueOf(any)
 	if val.Kind() == reflect.Ptr {
 		if val.IsNil() {
-			sizeBytes, _ := sizeObjectType.add(int32(-1))
-			return sizeBytes, 4, nil
+			sizeObjectType.add(int32(-1), data, location)
+			return nil
 		}
 		val = val.Elem()
 	}
@@ -35,58 +35,60 @@ func (this *Struct) add(any interface{}) ([]byte, int, error) {
 		pb := any.(proto.Message)
 		pbd, err := proto.Marshal(pb)
 		if err != nil {
-			return []byte{}, 0, errors.New("Failed To marshal proto " + typeName + " in protobuf object:" + err.Error())
+			return errors.New("Failed To marshal proto " + typeName + " in protobuf object:" + err.Error())
 		}
 		pbData = pbd
 	}
 
-	obj := NewEncode()
-	obj.appendBytes(stringObjectType.add(typeName))
-	obj.appendBytes(sizeObjectType.add(int32(len(pbData))))
-	obj.appendBytes(pbData, len(pbData))
-
-	return obj.Data(), obj.Location(), nil
+	stringObjectType.add(typeName, data, location)
+	sizeObjectType.add(int32(len(pbData)), data, location)
+	copy((*data)[*location:*location+len(pbData)], pbData)
+	*location += len(pbData)
+	return nil
 }
 
-func (this *Struct) get(data []byte, location int, registry common.IRegistry) (interface{}, int, error) {
-	l, _ := sizeObjectType.get(data, location)
-	size := l.(int32)
+func (this *Struct) get(data *[]byte, location *int, registry common.IRegistry) (interface{}, error) {
+	l := sizeObjectType.get(data, location)
+	size := int(l.(int32))
+
 	if size == -1 || size == 0 {
-		return nil, 4, nil
+		return nil, nil
 	}
 
-	typeN, typeSize := stringObjectType.get(data, location)
+	typeN := stringObjectType.get(data, location)
 	typeName := typeN.(string)
+
 	var info common.IInfo
 	var err error
 	var pb interface{}
+
 	isTransaction := typeName == "Transaction"
 	if !isTransaction {
 		info, err = registry.Info(typeName)
 		if err != nil {
-			return []byte{}, 0, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
+			return nil, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
 		}
 
 		pb, err = info.NewInstance()
 		if err != nil {
-			return []byte{}, 0, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
+			return nil, errors.New("Error proto name " + typeName + " in registry, cannot instantiate.")
 		}
 	}
 
-	location += typeSize
-	s, _ := sizeObjectType.get(data, location)
-	size = s.(int32)
-	location += 4
-	protoData := data[location : location+int(size)]
+	s := sizeObjectType.get(data, location)
+	size = int(s.(int32))
+	protoData := make([]byte, size)
+	copy((*data)[*location:*location+size], protoData)
 
 	if isTransaction {
 		pb, _ = TransactionSerializer.Unmarshal(protoData, nil)
 	} else {
 		err = proto.Unmarshal(protoData, pb.(proto.Message))
 		if err != nil {
-			return []byte{}, 0, errors.New("Failed To unmarshal proto " + typeName + ":" + err.Error())
+			return []byte{}, errors.New("Failed To unmarshal proto " + typeName + ":" + err.Error())
 		}
 	}
+	*location += size
 
-	return pb, typeSize + 4 + int(size), nil
+	return pb, nil
 }

@@ -7,20 +7,20 @@ import (
 
 type Map struct{}
 
-func (this *Map) add(any interface{}) ([]byte, int, error) {
+func (this *Map) add(any interface{}, data *[]byte, location *int) error {
 	if any == nil {
-		sizeBytes, _ := sizeObjectType.add(int32(-1))
-		return sizeBytes, 4, nil
+		sizeObjectType.add(int32(-1), data, location)
+		return nil
 	}
 	mapp := reflect.ValueOf(any)
 	if mapp.Len() == 0 {
-		sizeBytes, _ := sizeObjectType.add(int32(-1))
-		return sizeBytes, 4, nil
+		sizeObjectType.add(int32(-1), data, location)
+		return nil
 	}
 
-	obj := NewEncode()
-	obj.appendBytes(sizeObjectType.add(int32(mapp.Len())))
+	sizeObjectType.add(int32(mapp.Len()), data, location)
 
+	obj := NewDecode(data, location, nil)
 	keys := mapp.MapKeys()
 
 	for _, key := range keys {
@@ -28,16 +28,16 @@ func (this *Map) add(any interface{}) ([]byte, int, error) {
 		element := mapp.MapIndex(key).Interface()
 		obj.Add(element)
 	}
-	return obj.Data(), obj.location, nil
+
+	return nil
 }
 
-func (this *Map) get(data []byte, location int, registry common.IRegistry) (interface{}, int, error) {
-	l, _ := sizeObjectType.get(data, location)
-	size := l.(int32)
+func (this *Map) get(data *[]byte, location *int, registry common.IRegistry) (interface{}, error) {
+	l := sizeObjectType.get(data, location)
+	size := int(l.(int32))
 	if size == -1 || size == 0 {
-		return nil, 4, nil
+		return nil, nil
 	}
-	location += 4
 
 	enc := NewDecode(data, location, registry)
 	mapp := make(map[interface{}]interface{})
@@ -65,6 +65,5 @@ func (this *Map) get(data []byte, location int, registry common.IRegistry) (inte
 			newMap.SetMapIndex(reflect.ValueOf(k), reflect.ValueOf(v))
 		}
 	}
-
-	return newMap.Interface(), enc.Location(), nil
+	return newMap.Interface(), nil
 }

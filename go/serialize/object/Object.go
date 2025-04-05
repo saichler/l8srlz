@@ -11,19 +11,19 @@ var MessageSerializer common.ISerializer
 var TransactionSerializer common.ISerializer
 
 type Object struct {
-	data     []byte
-	location int
+	data     *[]byte
+	location *int
 	registry common.IRegistry
 }
 
 type Primitive interface {
-	add(interface{}) ([]byte, int)
-	get([]byte, int) (interface{}, int)
+	add(interface{}, *[]byte, *int)
+	get(*[]byte, *int) interface{}
 }
 
 type Complex interface {
-	add(interface{}) ([]byte, int, error)
-	get([]byte, int, common.IRegistry) (interface{}, int, error)
+	add(interface{}, *[]byte, *int) error
+	get(*[]byte, *int, common.IRegistry) (interface{}, error)
 }
 
 var primitives = make(map[reflect.Kind]Primitive)
@@ -50,11 +50,14 @@ func init() {
 
 func NewEncode() *Object {
 	obj := &Object{}
-	obj.data = make([]byte, 512)
+	data := make([]byte, 512)
+	location := 0
+	obj.data = &data
+	obj.location = &location
 	return obj
 }
 
-func NewDecode(data []byte, location int, registry common.IRegistry) *Object {
+func NewDecode(data *[]byte, location *int, registry common.IRegistry) *Object {
 	obj := &Object{}
 	obj.data = data
 	obj.location = location
@@ -62,15 +65,15 @@ func NewDecode(data []byte, location int, registry common.IRegistry) *Object {
 	return obj
 }
 
-func (obj *Object) Data() []byte {
-	return obj.data[0:obj.location]
+func (this *Object) Data() []byte {
+	return (*this.data)[0:*this.location]
 }
 
-func (obj *Object) Location() int {
-	return obj.location
+func (this *Object) Location() int {
+	return *this.location
 }
 
-func (obj *Object) Add(any interface{}) error {
+func (this *Object) Add(any interface{}) error {
 	kind := reflect.ValueOf(any).Kind()
 	if kind == reflect.Invalid {
 		kind = reflect.Ptr
@@ -82,24 +85,20 @@ func (obj *Object) Add(any interface{}) error {
 		return errors.New("Did not find any Object for kind " + kind.String())
 	}
 
-	obj.addKind(kind)
-	var b []byte
-	var l int
+	this.addKind(kind)
+
 	var e error
 
 	if pOK {
-		b, l = p.add(any)
+		p.add(any, this.data, this.location)
 	} else {
-		b, l, e = c.add(any)
+		e = c.add(any, this.data, this.location)
 	}
-
-	obj.appendBytes(b, l)
-
 	return e
 }
 
-func (obj *Object) Get() (interface{}, error) {
-	kind := obj.getKind()
+func (this *Object) Get() (interface{}, error) {
+	kind := this.getKind()
 	p, pOK := primitives[kind]
 	c, cOK := complex[kind]
 
@@ -108,43 +107,39 @@ func (obj *Object) Get() (interface{}, error) {
 	}
 
 	var d interface{}
-	var l int
 	var e error
 
 	if pOK {
-		d, l = p.get(obj.data, obj.location)
+		d = p.get(this.data, this.location)
 	} else {
-		d, l, e = c.get(obj.data, obj.location, obj.registry)
+		d, e = c.get(this.data, this.location, this.registry)
 	}
-
-	obj.location += l
 	return d, e
 }
 
-func (obj *Object) addKind(kind reflect.Kind) {
-	b, l := sizeObjectType.add(int32(kind))
-	obj.appendBytes(b, l)
+func (this *Object) addKind(kind reflect.Kind) {
+	sizeObjectType.add(int32(kind), this.data, this.location)
 }
 
-func (obj *Object) getKind() reflect.Kind {
-	i, l := sizeObjectType.get(obj.data, obj.location)
-	obj.location += l
+func (this *Object) getKind() reflect.Kind {
+	i := sizeObjectType.get(this.data, this.location)
 	return reflect.Kind(i.(int32))
 }
 
-func (obj *Object) Base64() string {
-	return base64.StdEncoding.EncodeToString(obj.data)
+func (this *Object) Base64() string {
+	return base64.StdEncoding.EncodeToString(this.Data())
 }
 
-func (obj *Object) appendBytes(data []byte, l int) {
-	if obj.location+len(data) > len(obj.data) {
-		newData := make([]byte, obj.location+len(data)+512)
-		copy(newData[0:len(obj.data)], obj.data)
-		obj.data = newData
+/*
+func (this *Object) appendBytes(data []byte, l int) {
+	if this.location+len(data) > len(this.data) {
+		newData := make([]byte, this.location+len(data)+512)
+		copy(newData[0:len(this.data)], this.data)
+		this.data = newData
 	}
-	copy(obj.data[obj.location:obj.location+l], data)
-	obj.location += l
-}
+	copy(this.data[this.location:this.location+l], data)
+	this.location += l
+}*/
 
 func FromBase64(b64 string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(b64)
@@ -164,6 +159,7 @@ func ElemOf(data []byte, r common.IRegistry) (interface{}, error) {
 	if data == nil {
 		return nil, nil
 	}
-	obj := NewDecode(data, 0, r)
+	location := 0
+	obj := NewDecode(&data, &location, r)
 	return obj.Get()
 }
