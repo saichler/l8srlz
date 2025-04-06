@@ -57,7 +57,15 @@ func NewEncode() *Object {
 	return obj
 }
 
-func NewDecode(data *[]byte, location *int, registry common.IRegistry) *Object {
+func NewDecode(data []byte, location int, registry common.IRegistry) *Object {
+	obj := &Object{}
+	obj.data = &data
+	obj.location = &location
+	obj.registry = registry
+	return obj
+}
+
+func newDecode(data *[]byte, location *int, registry common.IRegistry) *Object {
 	obj := &Object{}
 	obj.data = data
 	obj.location = location
@@ -161,7 +169,7 @@ func ElemOf(data []byte, r common.IRegistry) (interface{}, error) {
 		return nil, nil
 	}
 	location := 0
-	obj := NewDecode(&data, &location, r)
+	obj := NewDecode(data, location, r)
 	return obj.Get()
 }
 

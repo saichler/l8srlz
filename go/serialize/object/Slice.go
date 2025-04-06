@@ -29,7 +29,7 @@ func (this *Slice) add(any interface{}, data *[]byte, location *int) error {
 	} else {
 		(*data)[*location] = 0
 		*location += 1
-		obj := NewDecode(data, location, nil)
+		obj := newDecode(data, location, nil)
 		for i := 0; i < slice.Len(); i++ {
 			element := slice.Index(i).Interface()
 			obj.Add(element)
@@ -58,7 +58,7 @@ func (this *Slice) get(data *[]byte, location *int, registry common.IRegistry) (
 	elems := make([]interface{}, 0)
 	var sliceType reflect.Type
 
-	obj := NewDecode(data, location, registry)
+	obj := newDecode(data, location, registry)
 
 	for i := 0; i < size; i++ {
 		element, _ := obj.Get()

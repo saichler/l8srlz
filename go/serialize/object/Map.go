@@ -20,7 +20,7 @@ func (this *Map) add(any interface{}, data *[]byte, location *int) error {
 
 	sizeObjectType.add(int32(mapp.Len()), data, location)
 
-	obj := NewDecode(data, location, nil)
+	obj := newDecode(data, location, nil)
 	keys := mapp.MapKeys()
 
 	for _, key := range keys {
@@ -39,7 +39,7 @@ func (this *Map) get(data *[]byte, location *int, registry common.IRegistry) (in
 		return nil, nil
 	}
 
-	enc := NewDecode(data, location, registry)
+	enc := newDecode(data, location, registry)
 	mapp := make(map[interface{}]interface{})
 	var mapKeyType reflect.Type
 	var mapValueType reflect.Type
