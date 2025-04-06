@@ -7,16 +7,17 @@ import (
 type Float64 struct{}
 
 func (this *Float64) add(any interface{}, data *[]byte, location *int) {
+	checkAndEnlarge(data, location, 8)
 	f := any.(float64)
 	i := math.Float64bits(f)
-	(*data)[0] = byte((i >> 56) & 0xff)
-	(*data)[1] = byte((i >> 48) & 0xff)
-	(*data)[2] = byte((i >> 40) & 0xff)
-	(*data)[3] = byte((i >> 32) & 0xff)
-	(*data)[4] = byte((i >> 24) & 0xff)
-	(*data)[5] = byte((i >> 16) & 0xff)
-	(*data)[6] = byte((i >> 8) & 0xff)
-	(*data)[7] = byte((i) & 0xff)
+	(*data)[*location] = byte((i >> 56) & 0xff)
+	(*data)[*location+1] = byte((i >> 48) & 0xff)
+	(*data)[*location+2] = byte((i >> 40) & 0xff)
+	(*data)[*location+3] = byte((i >> 32) & 0xff)
+	(*data)[*location+4] = byte((i >> 24) & 0xff)
+	(*data)[*location+5] = byte((i >> 16) & 0xff)
+	(*data)[*location+6] = byte((i >> 8) & 0xff)
+	(*data)[*location+7] = byte((i) & 0xff)
 	*location += 8
 }
 

@@ -12,12 +12,13 @@ func (s *ProtoBuffBinary) Mode() common.SerializerMode {
 }
 
 func (s *ProtoBuffBinary) Marshal(any interface{}, registry common.IRegistry) ([]byte, error) {
-	obj := object.NewEncode([]byte{}, 0)
+	obj := object.NewEncode()
 	obj.Add(any)
 	return obj.Data(), nil
 }
 
 func (s *ProtoBuffBinary) Unmarshal(data []byte, registry common.IRegistry) (interface{}, error) {
-	obj := object.NewDecode(data, 0, registry)
+	location := 0
+	obj := object.NewDecode(&data, &location, registry)
 	return obj.Get()
 }

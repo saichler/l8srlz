@@ -3,6 +3,7 @@ package object
 type Bool struct{}
 
 func (this *Bool) add(any interface{}, data *[]byte, location *int) {
+	checkAndEnlarge(data, location, 1)
 	b := any.(bool)
 	if b {
 		(*data)[*location] = 1

@@ -3,6 +3,7 @@ package object
 type Int64 struct{}
 
 func (this *Int64) add(any interface{}, data *[]byte, location *int) {
+	checkAndEnlarge(data, location, 8)
 	i := any.(int64)
 	(*data)[*location] = byte((i >> 56) & 0xff)
 	(*data)[*location+1] = byte((i >> 48) & 0xff)

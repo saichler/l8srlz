@@ -3,7 +3,8 @@ package object
 type Int struct{}
 
 func (this *Int) add(any interface{}, data *[]byte, location *int) {
-	i := any.(int64)
+	checkAndEnlarge(data, location, 8)
+	i := any.(int)
 	(*data)[*location] = byte((i >> 56) & 0xff)
 	(*data)[*location+1] = byte((i >> 48) & 0xff)
 	(*data)[*location+2] = byte((i >> 40) & 0xff)
@@ -26,5 +27,5 @@ func (this *Int) get(data *[]byte, location *int) interface{} {
 		int64(0xff&(*data)[*location+6])<<8 |
 		int64(0xff&(*data)[*location+7])
 	*location += 8
-	return result
+	return int(result)
 }

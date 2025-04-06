@@ -112,7 +112,7 @@ func TestFloat32(t *testing.T) {
 	val := float32(39.39)
 	dval, err := testType(val)
 	if err != nil {
-		t.Fail()
+		Log.Fail(t, err)
 		return
 	}
 	res := dval.(float32)
@@ -126,13 +126,13 @@ func TestPbString(t *testing.T) {
 	val := "Hello World"
 	dval, err := testType(val)
 	if err != nil {
+		Log.Fail(t, err)
 		t.Fail()
 		return
 	}
 	res := dval.(string)
 	if res != val {
-		Log.Error("Value do not match:", res, " and ", val)
-		t.Fail()
+		Log.Fail(t, "Value do not match:", res, " and ", val)
 	}
 }
 

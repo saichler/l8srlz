@@ -9,14 +9,15 @@ type Float32 struct{}
 func (this *Float32) add(any interface{}, data *[]byte, location *int) {
 	f := any.(float32)
 	i := math.Float32bits(f)
-	(*data)[3] = byte(i)
-	(*data)[2] = byte(i >> 8)
-	(*data)[1] = byte(i >> 16)
-	(*data)[0] = byte(i >> 24)
+	(*data)[*location+3] = byte(i)
+	(*data)[*location+2] = byte(i >> 8)
+	(*data)[*location+1] = byte(i >> 16)
+	(*data)[*location] = byte(i >> 24)
 	*location += 4
 }
 
 func (this *Float32) get(data *[]byte, location *int) interface{} {
+	checkAndEnlarge(data, location, 4)
 	var result uint32
 	v1 := uint32((*data)[*location]) << 24
 	v2 := uint32((*data)[*location+1]) << 16

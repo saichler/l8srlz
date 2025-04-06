@@ -25,8 +25,7 @@ func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 		val = val.Elem()
 	}
 
-	typ := val.Type()
-	typeName := typ.Name()
+	typeName := val.Type().Name()
 	var pbData []byte
 
 	if typeName == "Transaction" {
@@ -40,8 +39,9 @@ func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 		pbData = pbd
 	}
 
-	stringObjectType.add(typeName, data, location)
+	checkAndEnlarge(data, location, 8+len(typeName)+len(pbData))
 	sizeObjectType.add(int32(len(pbData)), data, location)
+	stringObjectType.add(typeName, data, location)
 	copy((*data)[*location:*location+len(pbData)], pbData)
 	*location += len(pbData)
 	return nil
@@ -75,10 +75,8 @@ func (this *Struct) get(data *[]byte, location *int, registry common.IRegistry) 
 		}
 	}
 
-	s := sizeObjectType.get(data, location)
-	size = int(s.(int32))
 	protoData := make([]byte, size)
-	copy((*data)[*location:*location+size], protoData)
+	copy(protoData, (*data)[*location:*location+size])
 
 	if isTransaction {
 		pb, _ = TransactionSerializer.Unmarshal(protoData, nil)

@@ -12,6 +12,7 @@ func (this *UInt32) add(any interface{}, data *[]byte, location *int) {
 }
 
 func (this *UInt32) get(data *[]byte, location *int) interface{} {
+	checkAndEnlarge(data, location, 4)
 	var result uint32
 	v1 := uint32((*data)[*location]) << 24
 	v2 := uint32((*data)[*location+1]) << 16

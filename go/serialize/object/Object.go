@@ -50,7 +50,7 @@ func init() {
 
 func NewEncode() *Object {
 	obj := &Object{}
-	data := make([]byte, 512)
+	data := make([]byte, 1)
 	location := 0
 	obj.data = &data
 	obj.location = &location
@@ -162,4 +162,12 @@ func ElemOf(data []byte, r common.IRegistry) (interface{}, error) {
 	location := 0
 	obj := NewDecode(&data, &location, r)
 	return obj.Get()
+}
+
+func checkAndEnlarge(data *[]byte, location *int, need int) {
+	if *location+need > len(*data) {
+		tmp := make([]byte, *location+need+512)
+		copy(tmp, *data)
+		*data = tmp
+	}
 }

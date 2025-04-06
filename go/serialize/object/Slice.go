@@ -22,12 +22,13 @@ func (this *Slice) add(any interface{}, data *[]byte, location *int) error {
 	dataByte, ok := any.([]byte)
 	if ok {
 		(*data)[*location] = 1
-		*location++
+		*location += 1
+		checkAndEnlarge(data, location, len(dataByte))
 		copy((*data)[*location:*location+len(dataByte)], dataByte)
 		*location += len(dataByte)
 	} else {
 		(*data)[*location] = 0
-		*location++
+		*location += 1
 		obj := NewDecode(data, location, nil)
 		for i := 0; i < slice.Len(); i++ {
 			element := slice.Index(i).Interface()
@@ -45,11 +46,13 @@ func (this *Slice) get(data *[]byte, location *int, registry common.IRegistry) (
 	}
 
 	if (*data)[*location] == 1 {
-		*location++
+		*location += 1
 		result := make([]byte, size)
 		copy(result, (*data)[*location:*location+size])
 		*location += size
 		return result, nil
+	} else {
+		*location += 1
 	}
 
 	elems := make([]interface{}, 0)

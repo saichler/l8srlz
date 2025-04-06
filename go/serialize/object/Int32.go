@@ -7,6 +7,7 @@ import (
 type Int32 struct{}
 
 func (this *Int32) add(any interface{}, data *[]byte, location *int) {
+	checkAndEnlarge(data, location, 4)
 	i, ok := any.(int32)
 	//When it is an int32 derived type
 	if !ok {

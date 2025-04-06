@@ -16,6 +16,7 @@ func (this *UInt64) add(any interface{}, data *[]byte, location *int) {
 }
 
 func (this *UInt64) get(data *[]byte, location *int) interface{} {
+	checkAndEnlarge(data, location, 8)
 	var result uint64
 	result = uint64(0xff&(*data)[*location])<<56 |
 		uint64(0xff&(*data)[*location+1])<<48 |
