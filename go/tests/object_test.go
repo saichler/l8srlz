@@ -15,8 +15,7 @@ func testType(val interface{}) (interface{}, error) {
 		return nil, err
 	}
 	data := e.Data()
-	location := 0
-	e = object.NewDecode(&data, &location, globals.Registry())
+	e = object.NewDecode(data, 0, globals.Registry())
 	dval, err := e.Get()
 	if err != nil {
 		return nil, err

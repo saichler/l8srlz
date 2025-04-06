@@ -18,7 +18,6 @@ func (s *ProtoBuffBinary) Marshal(any interface{}, registry common.IRegistry) ([
 }
 
 func (s *ProtoBuffBinary) Unmarshal(data []byte, registry common.IRegistry) (interface{}, error) {
-	location := 0
-	obj := object.NewDecode(&data, &location, registry)
+	obj := object.NewDecode(data, 0, registry)
 	return obj.Get()
 }
