@@ -126,6 +126,7 @@ func (this *Elements) Serialize() ([]byte, error) {
 	obj := NewEncode()
 	obj.Add(len(this.elements))
 	var err error
+
 	for _, o := range this.elements {
 		err = obj.Add(o.element)
 		if err != nil {
@@ -136,7 +137,7 @@ func (this *Elements) Serialize() ([]byte, error) {
 			return nil, err
 		}
 		if o.error != nil {
-			err = obj.Add(err.Error())
+			err = obj.Add(o.error.Error())
 		} else {
 			err = obj.Add("")
 		}

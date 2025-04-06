@@ -50,7 +50,7 @@ func init() {
 
 func NewEncode() *Object {
 	obj := &Object{}
-	data := make([]byte, 1)
+	data := make([]byte, 1024)
 	location := 0
 	obj.data = &data
 	obj.location = &location
@@ -82,6 +82,7 @@ func (this *Object) Add(any interface{}) error {
 	c, cOK := complex[kind]
 
 	if !pOK && !cOK {
+		panic(kind.String())
 		return errors.New("Did not find any Object for kind " + kind.String())
 	}
 
