@@ -36,6 +36,9 @@ func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 		if err != nil {
 			return errors.New("Failed To marshal proto " + typeName + " in protobuf object:" + err.Error())
 		}
+		if len(pbd) == 0 {
+			return errors.New("Empty instance is not supported")
+		}
 		pbData = pbd
 	}
 
