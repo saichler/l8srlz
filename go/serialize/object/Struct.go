@@ -36,17 +36,21 @@ func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 		if err != nil {
 			return errors.New("Failed To marshal proto " + typeName + " in protobuf object:" + err.Error())
 		}
-		if len(pbd) == 0 {
-			return errors.New("Empty instance is not supported")
-		}
 		pbData = pbd
 	}
 
-	checkAndEnlarge(data, location, 8+len(typeName)+len(pbData))
-	sizeObjectType.add(int32(len(pbData)), data, location)
+	size := len(pbData)
+	checkAndEnlarge(data, location, 8+len(typeName)+size)
+	if size == 0 {
+		sizeObjectType.add(int32(-2), data, location)
+	} else {
+		sizeObjectType.add(int32(len(pbData)), data, location)
+	}
 	stringObjectType.add(typeName, data, location)
-	copy((*data)[*location:*location+len(pbData)], pbData)
-	*location += len(pbData)
+	if size > 0 {
+		copy((*data)[*location:*location+len(pbData)], pbData)
+		*location += len(pbData)
+	}
 	return nil
 }
 
@@ -75,6 +79,10 @@ func (this *Struct) get(data *[]byte, location *int, registry common.IRegistry) 
 		pb, err = info.NewInstance()
 		if err != nil {
 			return nil, errors.New("Error proto name " + typeName + " in registry, cannot instantiate.")
+		}
+		//if the size is -2 it is an empty interface
+		if size == -2 {
+			return pb, nil
 		}
 	}
 

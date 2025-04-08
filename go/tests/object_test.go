@@ -150,6 +150,21 @@ func TestProtoType(t *testing.T) {
 	}
 }
 
+func TestEmptyProtoType(t *testing.T) {
+	val := &testtypes.TestProto{}
+	globals.Registry().Register(val)
+	dval, err := testType(val)
+	if err != nil {
+		Log.Fail(t, err)
+		return
+	}
+	res := dval.(*testtypes.TestProto)
+	if res.MyString != val.MyString {
+		Log.Error("Value do not match:", res, " and ", val)
+		t.Fail()
+	}
+}
+
 func TestSliceOfInt32(t *testing.T) {
 	val := []int32{1, 2, 3, 4, 5}
 	dval, err := testType(val)
