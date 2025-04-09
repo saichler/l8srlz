@@ -3,6 +3,7 @@ package object
 type UInt64 struct{}
 
 func (this *UInt64) add(any interface{}, data *[]byte, location *int) {
+	checkAndEnlarge(data, location, 8)
 	i := any.(uint64)
 	(*data)[*location] = byte((i >> 56) & 0xff)
 	(*data)[*location+1] = byte((i >> 48) & 0xff)
@@ -16,7 +17,6 @@ func (this *UInt64) add(any interface{}, data *[]byte, location *int) {
 }
 
 func (this *UInt64) get(data *[]byte, location *int) interface{} {
-	checkAndEnlarge(data, location, 8)
 	var result uint64
 	result = uint64(0xff&(*data)[*location])<<56 |
 		uint64(0xff&(*data)[*location+1])<<48 |
