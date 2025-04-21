@@ -9,9 +9,10 @@ import (
 )
 
 type Elements struct {
-	elements []*Element
-	query    common.IQuery
-	pquery   *types.Query
+	elements       []*Element
+	query          common.IQuery
+	pquery         *types.Query
+	isNotification bool
 }
 
 type Element struct {
@@ -27,6 +28,12 @@ func NewQuery(gsql string, resources common.IResources) (*Elements, error) {
 	}
 	elems := &Elements{pquery: q.Query()}
 	return elems, nil
+}
+
+func NewNotify(any interface{}) *Elements {
+	elems := New(nil, any)
+	elems.isNotification = true
+	return elems
 }
 
 func New(err error, any interface{}) *Elements {
@@ -185,4 +192,8 @@ func (this *Elements) Deserialize(data []byte, r common.IRegistry) error {
 	}
 	this.pquery, _ = pq.(*types.Query)
 	return nil
+}
+
+func (this *Elements) IsNotification() bool {
+	return this.isNotification
 }
