@@ -174,6 +174,10 @@ func (this *Elements) Serialize() ([]byte, error) {
 	return obj.Data(), nil
 }
 
+func (this *Elements) PQuery() *types.Query {
+	return this.pquery
+}
+
 func (this *Elements) Deserialize(data []byte, r common.IRegistry) error {
 	location := 0
 	obj := NewDecode(data, location, r)
