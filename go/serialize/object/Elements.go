@@ -219,3 +219,12 @@ func (this *Elements) Notification() bool {
 func (this *Elements) ReplicasRequest() bool {
 	return this.replicasRequest
 }
+
+func (this *Elements) Append(elements common.IElements) {
+	elems := elements.Elements()
+	if elems == nil {
+		for _, elem := range elems {
+			this.elements = append(this.elements, elem.(*Element))
+		}
+	}
+}
