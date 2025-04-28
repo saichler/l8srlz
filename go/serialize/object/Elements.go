@@ -9,10 +9,11 @@ import (
 )
 
 type Elements struct {
-	elements       []*Element
-	query          common.IQuery
-	pquery         *types.Query
-	isNotification bool
+	elements        []*Element
+	query           common.IQuery
+	pquery          *types.Query
+	notification    bool
+	replicasRequest bool
 }
 
 type Element struct {
@@ -32,8 +33,25 @@ func NewQuery(gsql string, resources common.IResources) (*Elements, error) {
 
 func NewNotify(any interface{}) *Elements {
 	elems := New(nil, any)
-	elems.isNotification = true
+	elems.notification = true
 	return elems
+}
+
+func NewReplicasRequest(elems common.IElements) *Elements {
+	c := clone(elems)
+	c.replicasRequest = true
+	return c
+}
+
+func clone(e common.IElements) *Elements {
+	old := e.(*Elements)
+	c := &Elements{}
+	c.elements = old.elements
+	c.query = old.query
+	c.pquery = old.pquery
+	c.notification = old.notification
+	c.replicasRequest = old.replicasRequest
+	return c
 }
 
 func New(err error, any interface{}) *Elements {
@@ -194,6 +212,10 @@ func (this *Elements) Deserialize(data []byte, r common.IRegistry) error {
 	return nil
 }
 
-func (this *Elements) IsNotification() bool {
-	return this.isNotification
+func (this *Elements) Notification() bool {
+	return this.notification
+}
+
+func (this *Elements) ReplicasRequest() bool {
+	return this.replicasRequest
 }
