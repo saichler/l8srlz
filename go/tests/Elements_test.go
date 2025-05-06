@@ -4,12 +4,13 @@ import (
 	"errors"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/serializer/go/serialize/object"
+	"github.com/saichler/types/go/common"
 	"github.com/saichler/types/go/testtypes"
 	"testing"
 )
 
 func TestElements(t *testing.T) {
-	res, _ := CreateResources(25000, 2)
+	res, _ := CreateResources(25000, 2, common.Info_Level)
 	res.Registry().Register(&testtypes.TestProto{})
 	elem := CreateTestModelInstance(2)
 	elems := object.New(nil, elem)
@@ -37,5 +38,5 @@ func TestElements(t *testing.T) {
 		Log.Fail(t, e.Error())
 		return
 	}
-	
+
 }
