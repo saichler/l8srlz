@@ -2,7 +2,7 @@ package object
 
 import (
 	"errors"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"google.golang.org/protobuf/proto"
 	"reflect"
 )
@@ -54,7 +54,7 @@ func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 	return nil
 }
 
-func (this *Struct) get(data *[]byte, location *int, registry common.IRegistry) (interface{}, error) {
+func (this *Struct) get(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
 	l := sizeObjectType.get(data, location)
 	size := int(l.(int32))
 
@@ -65,7 +65,7 @@ func (this *Struct) get(data *[]byte, location *int, registry common.IRegistry) 
 	typeN := stringObjectType.get(data, location)
 	typeName := typeN.(string)
 
-	var info common.IInfo
+	var info ifs.IInfo
 	var err error
 	var pb interface{}
 

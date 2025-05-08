@@ -3,17 +3,17 @@ package object
 import (
 	"encoding/base64"
 	"errors"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"reflect"
 )
 
-var MessageSerializer common.ISerializer
-var TransactionSerializer common.ISerializer
+var MessageSerializer ifs.ISerializer
+var TransactionSerializer ifs.ISerializer
 
 type Object struct {
 	data     *[]byte
 	location *int
-	registry common.IRegistry
+	registry ifs.IRegistry
 }
 
 type Primitive interface {
@@ -23,7 +23,7 @@ type Primitive interface {
 
 type Complex interface {
 	add(interface{}, *[]byte, *int) error
-	get(*[]byte, *int, common.IRegistry) (interface{}, error)
+	get(*[]byte, *int, ifs.IRegistry) (interface{}, error)
 }
 
 var primitives = make(map[reflect.Kind]Primitive)
@@ -57,7 +57,7 @@ func NewEncode() *Object {
 	return obj
 }
 
-func NewDecode(data []byte, location int, registry common.IRegistry) *Object {
+func NewDecode(data []byte, location int, registry ifs.IRegistry) *Object {
 	obj := &Object{}
 	obj.data = &data
 	obj.location = &location
@@ -65,7 +65,7 @@ func NewDecode(data []byte, location int, registry common.IRegistry) *Object {
 	return obj
 }
 
-func newDecode(data *[]byte, location *int, registry common.IRegistry) *Object {
+func newDecode(data *[]byte, location *int, registry ifs.IRegistry) *Object {
 	obj := &Object{}
 	obj.data = data
 	obj.location = location
@@ -164,7 +164,7 @@ func DataOf(elem interface{}) ([]byte, error) {
 	return obj.Data(), err
 }
 
-func ElemOf(data []byte, r common.IRegistry) (interface{}, error) {
+func ElemOf(data []byte, r ifs.IRegistry) (interface{}, error) {
 	if data == nil {
 		return nil, nil
 	}

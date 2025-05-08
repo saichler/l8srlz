@@ -1,7 +1,7 @@
 package object
 
 import (
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"reflect"
 )
 
@@ -32,7 +32,7 @@ func (this *Map) add(any interface{}, data *[]byte, location *int) error {
 	return nil
 }
 
-func (this *Map) get(data *[]byte, location *int, registry common.IRegistry) (interface{}, error) {
+func (this *Map) get(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
 	l := sizeObjectType.get(data, location)
 	size := int(l.(int32))
 	if size == -1 || size == 0 {

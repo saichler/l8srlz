@@ -3,14 +3,14 @@ package object
 import (
 	"errors"
 	"github.com/saichler/gsql/go/gsql/interpreter"
-	"github.com/saichler/types/go/common"
-	"github.com/saichler/types/go/types"
+	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/types"
 	"reflect"
 )
 
 type Elements struct {
 	elements        []*Element
-	query           common.IQuery
+	query           ifs.IQuery
 	pquery          *types.Query
 	notification    bool
 	replicasRequest bool
@@ -22,7 +22,7 @@ type Element struct {
 	error   error
 }
 
-func NewQuery(gsql string, resources common.IResources) (*Elements, error) {
+func NewQuery(gsql string, resources ifs.IResources) (*Elements, error) {
 	q, e := interpreter.NewQuery(gsql, resources)
 	if e != nil {
 		return nil, e
@@ -37,13 +37,13 @@ func NewNotify(any interface{}) *Elements {
 	return elems
 }
 
-func NewReplicasRequest(elems common.IElements) *Elements {
+func NewReplicasRequest(elems ifs.IElements) *Elements {
 	c := clone(elems)
 	c.replicasRequest = true
 	return c
 }
 
-func clone(e common.IElements) *Elements {
+func clone(e ifs.IElements) *Elements {
 	old := e.(*Elements)
 	c := &Elements{}
 	c.elements = old.elements
@@ -92,7 +92,7 @@ func NewError(err string) *Elements {
 	return New(errors.New(err), nil)
 }
 
-func (this *Elements) Query(resources common.IResources) (common.IQuery, error) {
+func (this *Elements) Query(resources ifs.IResources) (ifs.IQuery, error) {
 	var err error
 	if this.query == nil && this.pquery != nil {
 		this.query, err = interpreter.NewFromQuery(this.pquery, resources)
@@ -178,7 +178,7 @@ func (this *Elements) PQuery() *types.Query {
 	return this.pquery
 }
 
-func (this *Elements) Deserialize(data []byte, r common.IRegistry) error {
+func (this *Elements) Deserialize(data []byte, r ifs.IRegistry) error {
 	location := 0
 	obj := NewDecode(data, location, r)
 	s, err := obj.Get()
@@ -224,7 +224,7 @@ func (this *Elements) ReplicasRequest() bool {
 	return this.replicasRequest
 }
 
-func (this *Elements) Append(elements common.IElements) {
+func (this *Elements) Append(elements ifs.IElements) {
 	elems := elements.Elements()
 	if elems == nil {
 		for _, elem := range elems {

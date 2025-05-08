@@ -1,12 +1,12 @@
 package serializers
 
-import "github.com/saichler/types/go/common"
+import "github.com/saichler/l8types/go/ifs"
 
-var Default common.ISerializer = &ProtoBuffBinary{}
+var Default ifs.ISerializer = &ProtoBuffBinary{}
 
 /*
 import (
-	"github.com/saichler/shared/go/share/common"
+	"github.com/saichler/l8utils/go/utils/common"
 	"google.golang.org/protobuf/proto"
 	"reflect"
 	"sync"
@@ -16,7 +16,7 @@ var empty = make([]byte, 0)
 var pbMtx = &sync.Mutex{}
 var UseProtoBuiltInSerializer = true
 
-var Default common.Serializer
+var Default ifs.Serializer
 
 func (r *type_registry2.StructRegistryImpl) Marshal(any interface{}) ([]byte, error) {
 	if any == nil {
@@ -47,7 +47,7 @@ func (r *type_registry2.StructRegistryImpl) Marshal(any interface{}) ([]byte, er
 		b, _ := ser.Add(any, r)
 		return b, nil
 	}
-	return nil, common.Error("serializer not found in struct registry for ", val.Type().Name())
+	return nil, ifs.Error("serializer not found in struct registry for ", val.Type().Name())
 }
 
 func (r *type_registry2.StructRegistryImpl) Unmarshal(name string, b []byte) (interface{}, error) {
@@ -67,5 +67,5 @@ func (r *type_registry2.StructRegistryImpl) Unmarshal(name string, b []byte) (in
 		dins, _ := ser.Get(b, 0, r)
 		return dins, nil
 	}
-	return nil, common.Error("serializer not found in struct registry for ", name)
+	return nil, ifs.Error("serializer not found in struct registry for ", name)
 }*/
