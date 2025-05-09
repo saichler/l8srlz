@@ -2,7 +2,7 @@ package tests
 
 import (
 	. "github.com/saichler/l8test/go/infra/t_resources"
-	"github.com/saichler/serializer/go/serialize/object"
+	"github.com/saichler/l8srlz/go/serialize/object"
 	"github.com/saichler/l8types/go/testtypes"
 	"strconv"
 	"testing"

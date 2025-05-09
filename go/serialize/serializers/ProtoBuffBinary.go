@@ -1,7 +1,7 @@
 package serializers
 
 import (
-	"github.com/saichler/serializer/go/serialize/object"
+	"github.com/saichler/l8srlz/go/serialize/object"
 	"github.com/saichler/l8types/go/ifs"
 )
 
