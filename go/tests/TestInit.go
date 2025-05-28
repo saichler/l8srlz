@@ -2,10 +2,10 @@ package tests
 
 import (
 	. "github.com/saichler/l8test/go/infra/t_resources"
-	"github.com/saichler/l8utils/go/utils/registry"
-	"github.com/saichler/l8utils/go/utils/resources"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types"
+	"github.com/saichler/l8utils/go/utils/registry"
+	"github.com/saichler/l8utils/go/utils/resources"
 )
 
 var globals ifs.IResources
@@ -19,5 +19,8 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	globals = resources.NewResources(registry.NewRegistry(), secure, nil, Log, nil, nil, config, nil)
+	globals = resources.NewResources(Log)
+	globals.Set(registry.NewRegistry())
+	globals.Set(secure)
+	globals.Set(config)
 }
