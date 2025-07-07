@@ -7,9 +7,6 @@ import (
 	"reflect"
 )
 
-var MessageSerializer ifs.ISerializer
-var TransactionSerializer ifs.ISerializer
-
 type Object struct {
 	data     *[]byte
 	location *int

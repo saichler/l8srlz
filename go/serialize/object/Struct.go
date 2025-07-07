@@ -26,17 +26,11 @@ func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 	}
 
 	typeName := val.Type().Name()
-	var pbData []byte
 
-	if typeName == "Transaction" {
-		pbData, _ = TransactionSerializer.Marshal(any, nil)
-	} else {
-		pb := any.(proto.Message)
-		pbd, err := proto.Marshal(pb)
-		if err != nil {
-			return errors.New("Failed To marshal proto " + typeName + " in protobuf object:" + err.Error())
-		}
-		pbData = pbd
+	pb := any.(proto.Message)
+	pbData, err := proto.Marshal(pb)
+	if err != nil {
+		return errors.New("Failed To marshal proto " + typeName + " in protobuf object:" + err.Error())
 	}
 
 	size := len(pbData)
@@ -69,33 +63,26 @@ func (this *Struct) get(data *[]byte, location *int, registry ifs.IRegistry) (in
 	var err error
 	var pb interface{}
 
-	isTransaction := typeName == "Transaction"
-	if !isTransaction {
-		info, err = registry.Info(typeName)
-		if err != nil {
-			return nil, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
-		}
+	info, err = registry.Info(typeName)
+	if err != nil {
+		return nil, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
+	}
 
-		pb, err = info.NewInstance()
-		if err != nil {
-			return nil, errors.New("Error proto name " + typeName + " in registry, cannot instantiate.")
-		}
-		//if the size is -2 it is an empty interface
-		if size == -2 {
-			return pb, nil
-		}
+	pb, err = info.NewInstance()
+	if err != nil {
+		return nil, errors.New("Error proto name " + typeName + " in registry, cannot instantiate.")
+	}
+	//if the size is -2 it is an empty interface
+	if size == -2 {
+		return pb, nil
 	}
 
 	protoData := make([]byte, size)
 	copy(protoData, (*data)[*location:*location+size])
 
-	if isTransaction {
-		pb, _ = TransactionSerializer.Unmarshal(protoData, nil)
-	} else {
-		err = proto.Unmarshal(protoData, pb.(proto.Message))
-		if err != nil {
-			return []byte{}, errors.New("Failed To unmarshal proto " + typeName + ":" + err.Error())
-		}
+	err = proto.Unmarshal(protoData, pb.(proto.Message))
+	if err != nil {
+		return []byte{}, errors.New("Failed To unmarshal proto " + typeName + ":" + err.Error())
 	}
 	*location += size
 
