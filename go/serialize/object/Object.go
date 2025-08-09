@@ -172,7 +172,12 @@ func ElemOf(data []byte, r ifs.IRegistry) (interface{}, error) {
 
 func checkAndEnlarge(data *[]byte, location *int, need int) {
 	if *location+need > len(*data) {
-		tmp := make([]byte, *location+need+512)
+		// Exponential growth with minimum threshold
+		newCap := len(*data) * 2
+		if newCap < *location+need+512 {
+			newCap = *location + need + 512
+		}
+		tmp := make([]byte, newCap)
 		copy(tmp, *data)
 		*data = tmp
 	}
