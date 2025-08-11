@@ -8,7 +8,7 @@ type Int32 struct{}
 
 func (this *Int32) add(any interface{}, data *[]byte, location *int) {
 	checkAndEnlarge(data, location, 4)
-	i := any.(int32)
+	i, _ := any.(int32)
 	binary.BigEndian.PutUint32((*data)[*location:], uint32(i))
 	*location += 4
 }
