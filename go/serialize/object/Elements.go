@@ -232,3 +232,29 @@ func (this *Elements) Append(elements ifs.IElements) {
 		}
 	}
 }
+
+func (this *Elements) AsList(r ifs.IRegistry) (interface{}, error) {
+	if len(this.elements) == 0 {
+		return nil, errors.New("elements is empty")
+	}
+
+	listName := reflect.ValueOf(this.elements[0].element).Elem().Type().Name() + "List"
+	info, err := r.Info(listName)
+
+	if err != nil {
+		return this.elements[0].element, nil
+	}
+
+	listItem, err := info.NewInstance()
+	if err != nil {
+		return nil, err
+	}
+	v := reflect.ValueOf(listItem).Elem()
+	f := v.FieldByName("List")
+	newList := reflect.MakeSlice(f.Type(), len(this.elements), len(this.elements))
+	for i := 0; i < len(this.elements); i++ {
+		newList.Index(i).Set(reflect.ValueOf(this.elements[i].element))
+	}
+	f.Set(newList)
+	return listItem, nil
+}

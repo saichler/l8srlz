@@ -2,10 +2,13 @@ package tests
 
 import (
 	"errors"
-	. "github.com/saichler/l8test/go/infra/t_resources"
+	"fmt"
 	"github.com/saichler/l8srlz/go/serialize/object"
+	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/testtypes"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"testing"
 )
 
@@ -39,4 +42,23 @@ func TestElements(t *testing.T) {
 		return
 	}
 
+}
+
+func TestElementsList(t *testing.T) {
+	res, _ := CreateResources(25000, 2, ifs.Info_Level)
+	res.Registry().Register(&testtypes.TestProto{})
+	res.Registry().Register(&testtypes.TestProtoList{})
+	elemList := []*testtypes.TestProto{CreateTestModelInstance(2), CreateTestModelInstance(3)}
+	elems := object.New(nil, elemList)
+	list, err := elems.AsList(res.Registry())
+	if err != nil {
+		Log.Fail(t, "Failed:", err)
+		return
+	}
+	json, err := protojson.Marshal(list.(proto.Message))
+	if err != nil {
+		Log.Fail(t, "Failed:", err)
+		return
+	}
+	fmt.Println(string(json))
 }
