@@ -65,7 +65,8 @@ func (this *Struct) get(data *[]byte, location *int, registry ifs.IRegistry) (in
 
 	info, err = registry.Info(typeName)
 	if err != nil {
-		return nil, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
+		panic("Unknown proto name " + typeName + " in registry, please register it.")
+		//return nil, errors.New("Unknown proto name " + typeName + " in registry, please register it.")
 	}
 
 	pb, err = info.NewInstance()
