@@ -228,11 +228,14 @@ func (this *Elements) ReplicasRequest() bool {
 }
 
 func (this *Elements) Append(elements ifs.IElements) {
-	elems := elements.Elements()
-	if elems == nil {
-		for _, elem := range elems {
-			this.elements = append(this.elements, elem.(*Element))
-		}
+	if elements == nil {
+		return
+	}
+	if elements.Elements() == nil {
+		return
+	}
+	for _, elem := range elements.Elements() {
+		this.Add(elem, nil, nil)
 	}
 }
 
