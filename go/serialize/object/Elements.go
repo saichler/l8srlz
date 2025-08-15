@@ -144,6 +144,9 @@ func (this *Elements) Errors() []error {
 }
 
 func (this *Elements) Error() error {
+	if this.elements == nil || len(this.elements) == 0 {
+		return nil
+	}
 	return this.elements[0].error
 }
 
