@@ -105,6 +105,8 @@ func (this *Object) Add(any interface{}) error {
 	default:
 		kind := reflect.ValueOf(any).Kind()
 		switch kind {
+		case reflect.Invalid:
+			fallthrough
 		case reflect.Ptr:
 			this.addKind(reflect.Ptr)
 			return addStruct(v, this.data, this.location)
