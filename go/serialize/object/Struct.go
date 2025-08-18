@@ -47,14 +47,13 @@ func addStruct(any interface{}, data *[]byte, location *int) error {
 
 func getStruct(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
 	l := getInt32(data, location)
-	size := int(l.(int32))
+	size := int(l)
 
 	if size == -1 || size == 0 {
 		return nil, nil
 	}
 
-	typeN := getString(data, location)
-	typeName := typeN.(string)
+	typeName := getString(data, location)
 
 	var info ifs.IInfo
 	var err error

@@ -38,7 +38,7 @@ func addSlice(any interface{}, data *[]byte, location *int) error {
 
 func getSlice(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
 	l := getInt32(data, location)
-	size := int(l.(int32))
+	size := int(l)
 	if size == -1 || size == 0 {
 		return nil, nil
 	}

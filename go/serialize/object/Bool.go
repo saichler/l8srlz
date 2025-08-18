@@ -1,15 +1,14 @@
 package object
 
-func addBool(any interface{}, data *[]byte, location *int) {
+func addBool(b bool, data *[]byte, location *int) {
 	checkAndEnlarge(data, location, 1)
-	b := any.(bool)
 	if b {
 		(*data)[*location] = 1
 	}
 	*location++
 }
 
-func getBool(data *[]byte, location *int) interface{} {
+func getBool(data *[]byte, location *int) bool {
 	b := (*data)[*location]
 	*location++
 	if b == 1 {

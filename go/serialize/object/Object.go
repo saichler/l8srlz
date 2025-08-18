@@ -158,7 +158,7 @@ func (this *Object) addKind(kind reflect.Kind) {
 
 func (this *Object) getKind() reflect.Kind {
 	i := getInt32(this.data, this.location)
-	return reflect.Kind(i.(int32))
+	return reflect.Kind(i)
 }
 
 func (this *Object) Base64() string {
