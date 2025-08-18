@@ -9,16 +9,16 @@ type Slice struct{}
 
 func (this *Slice) add(any interface{}, data *[]byte, location *int) error {
 	if any == nil {
-		sizeObjectType.add(int32(-1), data, location)
+		_Int32.add(int32(-1), data, location)
 		return nil
 	}
 	slice := reflect.ValueOf(any)
 	if slice.Len() == 0 {
-		sizeObjectType.add(int32(-1), data, location)
+		_Int32.add(int32(-1), data, location)
 		return nil
 	}
 
-	sizeObjectType.add(int32(slice.Len()), data, location)
+	_Int32.add(int32(slice.Len()), data, location)
 	dataByte, ok := any.([]byte)
 	if ok {
 		(*data)[*location] = 1
@@ -39,7 +39,7 @@ func (this *Slice) add(any interface{}, data *[]byte, location *int) error {
 }
 
 func (this *Slice) get(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
-	l := sizeObjectType.get(data, location)
+	l := _Int32.get(data, location)
 	size := int(l.(int32))
 	if size == -1 || size == 0 {
 		return nil, nil

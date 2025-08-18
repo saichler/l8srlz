@@ -12,14 +12,14 @@ type Struct struct {
 
 func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 	if any == nil {
-		sizeObjectType.add(int32(-1), data, location)
+		_Int32.add(int32(-1), data, location)
 		return nil
 	}
 
 	val := reflect.ValueOf(any)
 	if val.Kind() == reflect.Ptr {
 		if val.IsNil() {
-			sizeObjectType.add(int32(-1), data, location)
+			_Int32.add(int32(-1), data, location)
 			return nil
 		}
 		val = val.Elem()
@@ -36,11 +36,11 @@ func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 	size := len(pbData)
 	checkAndEnlarge(data, location, 8+len(typeName)+size)
 	if size == 0 {
-		sizeObjectType.add(int32(-2), data, location)
+		_Int32.add(int32(-2), data, location)
 	} else {
-		sizeObjectType.add(int32(len(pbData)), data, location)
+		_Int32.add(int32(len(pbData)), data, location)
 	}
-	stringObjectType.add(typeName, data, location)
+	_String.add(typeName, data, location)
 	if size > 0 {
 		copy((*data)[*location:*location+len(pbData)], pbData)
 		*location += len(pbData)
@@ -49,14 +49,14 @@ func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 }
 
 func (this *Struct) get(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
-	l := sizeObjectType.get(data, location)
+	l := _Int32.get(data, location)
 	size := int(l.(int32))
 
 	if size == -1 || size == 0 {
 		return nil, nil
 	}
 
-	typeN := stringObjectType.get(data, location)
+	typeN := _String.get(data, location)
 	typeName := typeN.(string)
 
 	var info ifs.IInfo

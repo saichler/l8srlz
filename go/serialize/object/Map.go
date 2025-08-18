@@ -9,16 +9,16 @@ type Map struct{}
 
 func (this *Map) add(any interface{}, data *[]byte, location *int) error {
 	if any == nil {
-		sizeObjectType.add(int32(-1), data, location)
+		_Int32.add(int32(-1), data, location)
 		return nil
 	}
 	mapp := reflect.ValueOf(any)
 	if mapp.Len() == 0 {
-		sizeObjectType.add(int32(-1), data, location)
+		_Int32.add(int32(-1), data, location)
 		return nil
 	}
 
-	sizeObjectType.add(int32(mapp.Len()), data, location)
+	_Int32.add(int32(mapp.Len()), data, location)
 
 	obj := newDecode(data, location, nil)
 	keys := mapp.MapKeys()
@@ -33,7 +33,7 @@ func (this *Map) add(any interface{}, data *[]byte, location *int) error {
 }
 
 func (this *Map) get(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
-	l := sizeObjectType.get(data, location)
+	l := _Int32.get(data, location)
 	size := int(l.(int32))
 	if size == -1 || size == 0 {
 		return nil, nil
