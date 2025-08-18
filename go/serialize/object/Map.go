@@ -5,20 +5,18 @@ import (
 	"reflect"
 )
 
-type Map struct{}
-
-func (this *Map) add(any interface{}, data *[]byte, location *int) error {
+func addMap(any interface{}, data *[]byte, location *int) error {
 	if any == nil {
-		_Int32.add(int32(-1), data, location)
+		addInt32(int32(-1), data, location)
 		return nil
 	}
 	mapp := reflect.ValueOf(any)
 	if mapp.Len() == 0 {
-		_Int32.add(int32(-1), data, location)
+		addInt32(int32(-1), data, location)
 		return nil
 	}
 
-	_Int32.add(int32(mapp.Len()), data, location)
+	addInt32(int32(mapp.Len()), data, location)
 
 	obj := newDecode(data, location, nil)
 	keys := mapp.MapKeys()
@@ -32,8 +30,8 @@ func (this *Map) add(any interface{}, data *[]byte, location *int) error {
 	return nil
 }
 
-func (this *Map) get(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
-	l := _Int32.get(data, location)
+func getMap(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
+	l := getInt32(data, location)
 	size := int(l.(int32))
 	if size == -1 || size == 0 {
 		return nil, nil

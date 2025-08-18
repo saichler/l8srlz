@@ -5,20 +5,18 @@ import (
 	"reflect"
 )
 
-type Slice struct{}
-
-func (this *Slice) add(any interface{}, data *[]byte, location *int) error {
+func addSlice(any interface{}, data *[]byte, location *int) error {
 	if any == nil {
-		_Int32.add(int32(-1), data, location)
+		addInt32(int32(-1), data, location)
 		return nil
 	}
 	slice := reflect.ValueOf(any)
 	if slice.Len() == 0 {
-		_Int32.add(int32(-1), data, location)
+		addInt32(int32(-1), data, location)
 		return nil
 	}
 
-	_Int32.add(int32(slice.Len()), data, location)
+	addInt32(int32(slice.Len()), data, location)
 	dataByte, ok := any.([]byte)
 	if ok {
 		(*data)[*location] = 1
@@ -38,8 +36,8 @@ func (this *Slice) add(any interface{}, data *[]byte, location *int) error {
 	return nil
 }
 
-func (this *Slice) get(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
-	l := _Int32.get(data, location)
+func getSlice(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
+	l := getInt32(data, location)
 	size := int(l.(int32))
 	if size == -1 || size == 0 {
 		return nil, nil

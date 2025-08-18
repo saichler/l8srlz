@@ -1,8 +1,6 @@
 package object
 
-type Bool struct{}
-
-func (this *Bool) add(any interface{}, data *[]byte, location *int) {
+func addBool(any interface{}, data *[]byte, location *int) {
 	checkAndEnlarge(data, location, 1)
 	b := any.(bool)
 	if b {
@@ -11,7 +9,7 @@ func (this *Bool) add(any interface{}, data *[]byte, location *int) {
 	*location++
 }
 
-func (this *Bool) get(data *[]byte, location *int) interface{} {
+func getBool(data *[]byte, location *int) interface{} {
 	b := (*data)[*location]
 	*location++
 	if b == 1 {

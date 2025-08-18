@@ -5,9 +5,7 @@ import (
 	"math"
 )
 
-type Float64 struct{}
-
-func (this *Float64) add(any interface{}, data *[]byte, location *int) {
+func addFloat64(any interface{}, data *[]byte, location *int) {
 	checkAndEnlarge(data, location, 8)
 	f := any.(float64)
 	i := math.Float64bits(f)
@@ -16,7 +14,7 @@ func (this *Float64) add(any interface{}, data *[]byte, location *int) {
 	*location += 8
 }
 
-func (this *Float64) get(data *[]byte, location *int) interface{} {
+func getFloat64(data *[]byte, location *int) interface{} {
 	loc := *location
 	result := binary.BigEndian.Uint64((*data)[loc : loc+8])
 	*location += 8

@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"github.com/saichler/l8types/go/ifs"
+	"go/types"
 	"reflect"
 )
 
@@ -22,19 +23,6 @@ type Complex interface {
 	add(interface{}, *[]byte, *int) error
 	get(*[]byte, *int, ifs.IRegistry) (interface{}, error)
 }
-
-var _Int = &Int{}
-var _UInt32 = &UInt32{}
-var _UInt64 = &UInt64{}
-var _Int32 = &Int32{}
-var _Int64 = &Int64{}
-var _Float32 = &Float32{}
-var _Float64 = &Float64{}
-var _String = &String{}
-var _Bool = &Bool{}
-var _Struct = &Struct{}
-var _Slice = &Slice{}
-var _Map = &Map{}
 
 func NewEncode() *Object {
 	obj := &Object{}
@@ -74,61 +62,60 @@ func (this *Object) Add(any interface{}) error {
 	switch v := any.(type) {
 	case int:
 		this.addKind(reflect.Int)
-		_Int.add(v, this.data, this.location)
+		addInt(v, this.data, this.location)
 		return nil
 	case uint32:
 		this.addKind(reflect.Uint32)
-		_UInt32.add(v, this.data, this.location)
+		addUInt32(v, this.data, this.location)
 		return nil
 	case uint64:
 		this.addKind(reflect.Uint64)
-		_UInt64.add(v, this.data, this.location)
+		addUInt64(v, this.data, this.location)
 		return nil
 	case int32:
 		this.addKind(reflect.Int32)
-		_Int32.add(v, this.data, this.location)
+		addInt32(v, this.data, this.location)
 		return nil
 	case int64:
 		this.addKind(reflect.Int64)
-		_Int64.add(v, this.data, this.location)
+		addInt64(v, this.data, this.location)
 		return nil
 	case float32:
 		this.addKind(reflect.Float32)
-		_Float32.add(v, this.data, this.location)
+		addFloat32(v, this.data, this.location)
 		return nil
 	case float64:
 		this.addKind(reflect.Float64)
-		_Float64.add(v, this.data, this.location)
+		addFloat64(v, this.data, this.location)
 		return nil
 	case string:
 		this.addKind(reflect.String)
-		_String.add(v, this.data, this.location)
+		addString(v, this.data, this.location)
 		return nil
 	case bool:
 		this.addKind(reflect.Bool)
-		_Bool.add(v, this.data, this.location)
+		addBool(v, this.data, this.location)
 		return nil
-	case Slice:
+	case types.Slice:
 		this.addKind(reflect.Slice)
-		return _Slice.add(v, this.data, this.location)
-	case Map:
+		return addSlice(v, this.data, this.location)
+	case types.Map:
 		this.addKind(reflect.Map)
-		return _Map.add(v, this.data, this.location)
+		return addMap(v, this.data, this.location)
 	default:
 		kind := reflect.ValueOf(any).Kind()
 		switch kind {
 		case reflect.Ptr:
 			this.addKind(reflect.Ptr)
-			return _Struct.add(v, this.data, this.location)
+			return addStruct(v, this.data, this.location)
 		case reflect.Slice:
 			this.addKind(reflect.Slice)
-			return _Slice.add(v, this.data, this.location)
+			return addSlice(v, this.data, this.location)
 		case reflect.Map:
 			this.addKind(reflect.Map)
-			return _Map.add(v, this.data, this.location)
+			return addMap(v, this.data, this.location)
 		}
 	}
-
 	kind := reflect.ValueOf(any).Kind()
 	//panic("Did not find any Object for kind " + kind.String())
 	return errors.New("Did not find any Object for kind " + kind.String())
@@ -138,39 +125,39 @@ func (this *Object) Get() (interface{}, error) {
 	kind := this.getKind()
 	switch kind {
 	case reflect.Int:
-		return _Int.get(this.data, this.location), nil
+		return getInt(this.data, this.location), nil
 	case reflect.Uint32:
-		return _UInt32.get(this.data, this.location), nil
+		return getUInt32(this.data, this.location), nil
 	case reflect.Uint64:
-		return _UInt64.get(this.data, this.location), nil
+		return getUInt64(this.data, this.location), nil
 	case reflect.Int32:
-		return _Int32.get(this.data, this.location), nil
+		return getInt32(this.data, this.location), nil
 	case reflect.Int64:
-		return _Int64.get(this.data, this.location), nil
+		return getInt64(this.data, this.location), nil
 	case reflect.Float32:
-		return _Float32.get(this.data, this.location), nil
+		return getFloat32(this.data, this.location), nil
 	case reflect.Float64:
-		return _Float64.get(this.data, this.location), nil
+		return getFloat64(this.data, this.location), nil
 	case reflect.String:
-		return _String.get(this.data, this.location), nil
+		return getString(this.data, this.location), nil
 	case reflect.Bool:
-		return _Bool.get(this.data, this.location), nil
+		return getBool(this.data, this.location), nil
 	case reflect.Slice:
-		return _Slice.get(this.data, this.location, this.registry)
+		return getSlice(this.data, this.location, this.registry)
 	case reflect.Map:
-		return _Map.get(this.data, this.location, this.registry)
+		return getMap(this.data, this.location, this.registry)
 	case reflect.Ptr:
-		return _Struct.get(this.data, this.location, this.registry)
+		return getStruct(this.data, this.location, this.registry)
 	}
 	return nil, errors.New("Did not find any Object for kind " + kind.String())
 }
 
 func (this *Object) addKind(kind reflect.Kind) {
-	_Int32.add(int32(kind), this.data, this.location)
+	addInt32(int32(kind), this.data, this.location)
 }
 
 func (this *Object) getKind() reflect.Kind {
-	i := _Int32.get(this.data, this.location)
+	i := getInt32(this.data, this.location)
 	return reflect.Kind(i.(int32))
 }
 

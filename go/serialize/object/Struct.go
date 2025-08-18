@@ -7,19 +7,16 @@ import (
 	"reflect"
 )
 
-type Struct struct {
-}
-
-func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
+func addStruct(any interface{}, data *[]byte, location *int) error {
 	if any == nil {
-		_Int32.add(int32(-1), data, location)
+		addInt32(int32(-1), data, location)
 		return nil
 	}
 
 	val := reflect.ValueOf(any)
 	if val.Kind() == reflect.Ptr {
 		if val.IsNil() {
-			_Int32.add(int32(-1), data, location)
+			addInt32(int32(-1), data, location)
 			return nil
 		}
 		val = val.Elem()
@@ -36,11 +33,11 @@ func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 	size := len(pbData)
 	checkAndEnlarge(data, location, 8+len(typeName)+size)
 	if size == 0 {
-		_Int32.add(int32(-2), data, location)
+		addInt32(int32(-2), data, location)
 	} else {
-		_Int32.add(int32(len(pbData)), data, location)
+		addInt32(int32(len(pbData)), data, location)
 	}
-	_String.add(typeName, data, location)
+	addString(typeName, data, location)
 	if size > 0 {
 		copy((*data)[*location:*location+len(pbData)], pbData)
 		*location += len(pbData)
@@ -48,15 +45,15 @@ func (this *Struct) add(any interface{}, data *[]byte, location *int) error {
 	return nil
 }
 
-func (this *Struct) get(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
-	l := _Int32.get(data, location)
+func getStruct(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
+	l := getInt32(data, location)
 	size := int(l.(int32))
 
 	if size == -1 || size == 0 {
 		return nil, nil
 	}
 
-	typeN := _String.get(data, location)
+	typeN := getString(data, location)
 	typeName := typeN.(string)
 
 	var info ifs.IInfo
