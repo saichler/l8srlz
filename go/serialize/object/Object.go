@@ -146,6 +146,8 @@ func (this *Object) Get() (interface{}, error) {
 		return getSlice(this.data, this.location, this.registry)
 	case reflect.Map:
 		return getMap(this.data, this.location, this.registry)
+	case reflect.Invalid:
+		fallthrough
 	case reflect.Ptr:
 		return getStruct(this.data, this.location, this.registry)
 	}
