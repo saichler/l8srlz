@@ -3,9 +3,10 @@ package object
 import (
 	"encoding/base64"
 	"errors"
-	"github.com/saichler/l8types/go/ifs"
 	"go/types"
 	"reflect"
+
+	"github.com/saichler/l8types/go/ifs"
 )
 
 type Object struct {
@@ -119,6 +120,12 @@ func (this *Object) Add(any interface{}) error {
 		}
 	}
 	kind := reflect.ValueOf(any).Kind()
+	//Special case for enums impl in protocol buffers
+	if kind == reflect.Int32 {
+		this.addKind(reflect.Int32)
+		addInt32(int32(reflect.ValueOf(any).Int()), this.data, this.location)
+		return nil
+	}
 	//panic("Did not find any Object for kind " + kind.String())
 	return errors.New("Did not find any Object for kind " + kind.String())
 }
