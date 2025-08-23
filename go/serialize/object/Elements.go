@@ -2,10 +2,11 @@ package object
 
 import (
 	"errors"
+	"reflect"
+
 	"github.com/saichler/gsql/go/gsql/interpreter"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types"
-	"reflect"
 )
 
 type Elements struct {
@@ -120,6 +121,9 @@ func (this *Elements) Elements() []interface{} {
 }
 
 func (this *Elements) Element() interface{} {
+	if this.elements == nil || len(this.elements) == 0 {
+		return nil
+	}
 	return this.elements[0].element
 }
 
