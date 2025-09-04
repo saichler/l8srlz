@@ -247,7 +247,9 @@ func (this *Elements) AsList(r ifs.IRegistry) (interface{}, error) {
 	if len(this.elements) == 0 {
 		return nil, errors.New("elements is empty")
 	}
-
+	if this.elements[0] == nil {
+		return nil, errors.New("element is nil")
+	}
 	listName := reflect.ValueOf(this.elements[0].element).Elem().Type().Name() + "List"
 	info, err := r.Info(listName)
 
