@@ -270,3 +270,10 @@ func (this *Elements) AsList(r ifs.IRegistry) (interface{}, error) {
 	f.Set(newList)
 	return listItem, nil
 }
+
+func (this *Elements) IsFilterMode() bool {
+	if this.pquery == nil && (this.elements == nil || len(this.elements) == 0) {
+		return true
+	}
+	return false
+}
