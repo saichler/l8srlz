@@ -272,7 +272,7 @@ func (this *Elements) AsList(r ifs.IRegistry) (interface{}, error) {
 }
 
 func (this *Elements) IsFilterMode() bool {
-	if this.pquery == nil && (this.elements == nil || len(this.elements) == 0) {
+	if this.pquery == nil && (this.elements != nil || len(this.elements) == 1) {
 		return true
 	}
 	return false
