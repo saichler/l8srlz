@@ -13,6 +13,7 @@ type Elements struct {
 	elements        []*Element
 	query           ifs.IQuery
 	pquery          *types.Query
+	pages           int32
 	notification    bool
 	replicasRequest bool
 }
@@ -89,6 +90,12 @@ func New(err error, any interface{}) *Elements {
 	return result
 }
 
+func NewQueryResult(any interface{}, pages int32) *Elements {
+	elements := New(nil, any)
+	elements.pages = pages
+	return elements
+}
+
 func NewError(err string) *Elements {
 	return New(errors.New(err), nil)
 }
@@ -156,6 +163,7 @@ func (this *Elements) Error() error {
 
 func (this *Elements) Serialize() ([]byte, error) {
 	obj := NewEncode()
+	obj.Add(this.pages)
 	obj.Add(len(this.elements))
 	var err error
 
@@ -188,6 +196,11 @@ func (this *Elements) PQuery() *types.Query {
 func (this *Elements) Deserialize(data []byte, r ifs.IRegistry) error {
 	location := 0
 	obj := NewDecode(data, location, r)
+	pages, err := obj.Get()
+	if err != nil {
+		return err
+	}
+	this.pages = pages.(int32)
 	s, err := obj.Get()
 	if err != nil {
 		return err
@@ -268,6 +281,12 @@ func (this *Elements) AsList(r ifs.IRegistry) (interface{}, error) {
 		newList.Index(i).Set(reflect.ValueOf(this.elements[i].element))
 	}
 	f.Set(newList)
+
+	f = v.FieldByName("TotalPages")
+	if f.IsValid() && f.CanSet() {
+		f.SetInt(int64(this.pages))
+	}
+
 	return listItem, nil
 }
 
