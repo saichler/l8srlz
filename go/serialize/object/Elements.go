@@ -185,7 +185,7 @@ func (this *Elements) Serialize() ([]byte, error) {
 		}
 	}
 
-	if this.stats == nil {
+	if this.stats == nil || len(this.stats) == 0 {
 		this.stats = make(map[string]int32)
 		this.stats["Total"] = int32(len(this.elements))
 	}
@@ -234,7 +234,7 @@ func (this *Elements) Deserialize(data []byte, r ifs.IRegistry) error {
 	if err != nil {
 		return err
 	}
-	this.stats = st.(map[string]int32)
+	this.stats, _ = st.(map[string]int32)
 
 	pq, err := obj.Get()
 	if err != nil {
