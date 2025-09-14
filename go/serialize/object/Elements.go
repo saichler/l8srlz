@@ -13,7 +13,7 @@ type Elements struct {
 	elements        []*Element
 	query           ifs.IQuery
 	pquery          *types.Query
-	pages           int32
+	stats           map[string]int32
 	notification    bool
 	replicasRequest bool
 }
@@ -90,9 +90,9 @@ func New(err error, any interface{}) *Elements {
 	return result
 }
 
-func NewQueryResult(any interface{}, pages int32) *Elements {
+func NewQueryResult(any interface{}, stats map[string]int32) *Elements {
 	elements := New(nil, any)
-	elements.pages = pages
+	elements.stats = stats
 	return elements
 }
 
@@ -163,7 +163,6 @@ func (this *Elements) Error() error {
 
 func (this *Elements) Serialize() ([]byte, error) {
 	obj := NewEncode()
-	obj.Add(this.pages)
 	obj.Add(len(this.elements))
 	var err error
 
@@ -185,6 +184,13 @@ func (this *Elements) Serialize() ([]byte, error) {
 			return nil, err
 		}
 	}
+
+	if this.stats == nil {
+		this.stats = make(map[string]int32)
+		this.stats["Total"] = int32(len(this.elements))
+	}
+	obj.Add(this.stats)
+
 	obj.Add(this.pquery)
 	return obj.Data(), nil
 }
@@ -196,11 +202,6 @@ func (this *Elements) PQuery() *types.Query {
 func (this *Elements) Deserialize(data []byte, r ifs.IRegistry) error {
 	location := 0
 	obj := NewDecode(data, location, r)
-	pages, err := obj.Get()
-	if err != nil {
-		return err
-	}
-	this.pages = pages.(int32)
 	s, err := obj.Get()
 	if err != nil {
 		return err
@@ -228,6 +229,13 @@ func (this *Elements) Deserialize(data []byte, r ifs.IRegistry) error {
 		}
 		this.elements[i] = elem
 	}
+
+	st, err := obj.Get()
+	if err != nil {
+		return err
+	}
+	this.stats = st.(map[string]int32)
+
 	pq, err := obj.Get()
 	if err != nil {
 		return err
@@ -282,9 +290,9 @@ func (this *Elements) AsList(r ifs.IRegistry) (interface{}, error) {
 	}
 	f.Set(newList)
 
-	f = v.FieldByName("TotalPages")
+	f = v.FieldByName("Stats")
 	if f.IsValid() && f.CanSet() {
-		f.SetInt(int64(this.pages))
+		f.Set(reflect.ValueOf(this.stats))
 	}
 
 	return listItem, nil
