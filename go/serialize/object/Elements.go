@@ -6,7 +6,6 @@ import (
 
 	"github.com/saichler/gsql/go/gsql/interpreter"
 	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/l8types/go/types"
 )
 
 type Elements struct {

@@ -3,7 +3,6 @@ package tests
 import (
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8utils/go/utils/registry"
 	"github.com/saichler/l8utils/go/utils/resources"
 )
