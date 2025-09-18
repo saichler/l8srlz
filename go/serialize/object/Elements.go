@@ -6,12 +6,13 @@ import (
 
 	"github.com/saichler/gsql/go/gsql/interpreter"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/types/l8api"
 )
 
 type Elements struct {
 	elements        []*Element
 	query           ifs.IQuery
-	pquery          *types.Query
+	pquery          *l8api.L8Query
 	stats           map[string]int32
 	notification    bool
 	replicasRequest bool
@@ -194,7 +195,7 @@ func (this *Elements) Serialize() ([]byte, error) {
 	return obj.Data(), nil
 }
 
-func (this *Elements) PQuery() *types.Query {
+func (this *Elements) PQuery() *l8api.L8Query {
 	return this.pquery
 }
 
@@ -239,7 +240,7 @@ func (this *Elements) Deserialize(data []byte, r ifs.IRegistry) error {
 	if err != nil {
 		return err
 	}
-	this.pquery, _ = pq.(*types.Query)
+	this.pquery, _ = pq.(*l8api.L8Query)
 	return nil
 }
 
