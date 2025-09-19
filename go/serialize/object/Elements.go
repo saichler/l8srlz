@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/saichler/gsql/go/gsql/interpreter"
+	"github.com/saichler/l8ql/go/gsql/interpreter"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8api"
 )
