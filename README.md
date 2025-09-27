@@ -1,10 +1,10 @@
-# L8SRLZ - High-Performance Object Serialization Library
+# Layer 8 Serialization - High-Performance Object Serialization Library
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/go-1.23.8+-blue.svg)](https://golang.org/)
 [![Java Version](https://img.shields.io/badge/java-11+-blue.svg)](https://openjdk.java.net/)
 
-L8SRLZ is a cross-platform, high-performance object serialization library designed for microservices environments. It provides efficient binary serialization with Protocol Buffers integration, dynamic type registry, and query-based data selection capabilities.
+Layer 8 Serialization (L8SRLZ) is a cross-platform, high-performance object serialization library designed for microservices environments. It provides efficient binary serialization with Protocol Buffers integration, dynamic type registry, query-based data selection capabilities, and comprehensive filtering modes for enhanced data processing.
 
 ## 🚀 Features
 
@@ -16,6 +16,9 @@ L8SRLZ is a cross-platform, high-performance object serialization library design
 - **Microservices Ready**: Designed for distributed systems and delta data sharing
 - **Thread-Safe**: Concurrent-safe operations with proper synchronization
 - **Base64 Encoding**: Built-in text encoding for network transmission
+- **Advanced Filtering**: Multiple filter modes for data processing and selection
+- **Statistics Integration**: Built-in performance monitoring and data statistics
+- **Page-based Processing**: Support for paginated data handling and streaming
 - **Comprehensive Testing**: Extensive test coverage with performance benchmarks
 
 ## 📦 Project Structure
@@ -30,6 +33,7 @@ l8srlz/
 ├── java/                   # Java implementation
 │   ├── src/main/java/      # Java source code
 │   └── src/test/java/      # Java tests
+├── web.html               # Interactive project documentation
 ├── LICENSE                 # Apache 2.0 License
 └── README.md              # This file
 ```
@@ -45,6 +49,9 @@ The library consists of several key architectural components:
 - **Type Handlers**: Specialized serializers for primitive and complex types
 - **Registry System**: Dynamic type resolution for deserialization
 - **Query Integration**: GSQL language support for selective serialization
+- **Filter System**: Advanced filtering capabilities with multiple modes
+- **Statistics Module**: Performance monitoring and data analysis
+- **Page Manager**: Efficient pagination and streaming support
 
 ### Supported Data Types
 
@@ -399,4 +406,4 @@ For questions, issues, or contributions:
 
 ---
 
-**L8SRLZ** - Powering efficient serialization in distributed systems.
+**Layer 8 Serialization** - Powering efficient serialization in distributed systems.
