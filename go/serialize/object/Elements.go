@@ -10,12 +10,12 @@ import (
 )
 
 type Elements struct {
-	elements        []*Element
-	query           ifs.IQuery
-	pquery          *l8api.L8Query
-	stats           map[string]int32
-	notification    bool
-	replicasRequest bool
+	elements     []*Element
+	query        ifs.IQuery
+	pquery       *l8api.L8Query
+	stats        map[string]int32
+	notification bool
+	replica      int
 }
 
 type Element struct {
@@ -39,9 +39,9 @@ func NewNotify(any interface{}) *Elements {
 	return elems
 }
 
-func NewReplicasRequest(elems ifs.IElements) *Elements {
+func NewReplicaRequest(elems ifs.IElements, replica int) *Elements {
 	c := clone(elems)
-	c.replicasRequest = true
+	c.replica = replica
 	return c
 }
 
@@ -52,7 +52,7 @@ func clone(e ifs.IElements) *Elements {
 	c.query = old.query
 	c.pquery = old.pquery
 	c.notification = old.notification
-	c.replicasRequest = old.replicasRequest
+	c.replica = old.replica
 	return c
 }
 
@@ -163,6 +163,7 @@ func (this *Elements) Error() error {
 
 func (this *Elements) Serialize() ([]byte, error) {
 	obj := NewEncode()
+	obj.Add(this.replica)
 	obj.Add(len(this.elements))
 	var err error
 
@@ -202,6 +203,12 @@ func (this *Elements) PQuery() *l8api.L8Query {
 func (this *Elements) Deserialize(data []byte, r ifs.IRegistry) error {
 	location := 0
 	obj := NewDecode(data, location, r)
+
+	rp, err := obj.Get()
+	if err != nil {
+		return err
+	}
+	this.replica = rp.(int)
 	s, err := obj.Get()
 	if err != nil {
 		return err
@@ -248,8 +255,8 @@ func (this *Elements) Notification() bool {
 	return this.notification
 }
 
-func (this *Elements) ReplicasRequest() bool {
-	return this.replicasRequest
+func (this *Elements) Replica() int {
+	return this.replica
 }
 
 func (this *Elements) Append(elements ifs.IElements) {
