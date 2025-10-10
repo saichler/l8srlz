@@ -17,7 +17,7 @@ type Elements struct {
 	notification bool
 
 	isReplica bool
-	replica   int
+	replica   byte
 }
 
 type Element struct {
@@ -41,7 +41,7 @@ func NewNotify(any interface{}) *Elements {
 	return elems
 }
 
-func NewReplicaRequest(elems ifs.IElements, replica int) *Elements {
+func NewReplicaRequest(elems ifs.IElements, replica byte) *Elements {
 	c := clone(elems)
 	c.replica = replica
 	c.isReplica = true
@@ -252,7 +252,7 @@ func (this *Elements) Notification() bool {
 	return this.notification
 }
 
-func (this *Elements) Replica() int {
+func (this *Elements) Replica() byte {
 	return this.replica
 }
 
