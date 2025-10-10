@@ -15,7 +15,9 @@ type Elements struct {
 	pquery       *l8api.L8Query
 	stats        map[string]int32
 	notification bool
-	replica      int
+
+	isReplica bool
+	replica   int
 }
 
 type Element struct {
@@ -42,6 +44,7 @@ func NewNotify(any interface{}) *Elements {
 func NewReplicaRequest(elems ifs.IElements, replica int) *Elements {
 	c := clone(elems)
 	c.replica = replica
+	c.isReplica = true
 	return c
 }
 
@@ -163,7 +166,6 @@ func (this *Elements) Error() error {
 
 func (this *Elements) Serialize() ([]byte, error) {
 	obj := NewEncode()
-	obj.Add(this.replica)
 	obj.Add(len(this.elements))
 	var err error
 
@@ -204,11 +206,6 @@ func (this *Elements) Deserialize(data []byte, r ifs.IRegistry) error {
 	location := 0
 	obj := NewDecode(data, location, r)
 
-	rp, err := obj.Get()
-	if err != nil {
-		return err
-	}
-	this.replica = rp.(int)
 	s, err := obj.Get()
 	if err != nil {
 		return err
@@ -257,6 +254,10 @@ func (this *Elements) Notification() bool {
 
 func (this *Elements) Replica() int {
 	return this.replica
+}
+
+func (this *Elements) IsReplica() bool {
+	return this.isReplica
 }
 
 func (this *Elements) Append(elements ifs.IElements) {
