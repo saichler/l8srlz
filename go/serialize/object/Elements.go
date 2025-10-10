@@ -32,7 +32,6 @@ func NewQuery(gsql string, resources ifs.IResources) (*Elements, error) {
 		return nil, e
 	}
 	elems := &Elements{pquery: q.Query()}
-	elems.replica = ifs.ReplicationOff
 	return elems, nil
 }
 
@@ -67,7 +66,6 @@ func New(err error, any interface{}) *Elements {
 	}
 
 	result := &Elements{}
-	result.replica = ifs.ReplicationOff
 	result.elements = make([]*Element, 1)
 	result.elements[0] = &Element{}
 	if err != nil {
