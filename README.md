@@ -3,8 +3,9 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/go-1.23.8+-blue.svg)](https://golang.org/)
 [![Java Version](https://img.shields.io/badge/java-11+-blue.svg)](https://openjdk.java.net/)
+[![Last Updated](https://img.shields.io/badge/last%20updated-October%202025-brightgreen.svg)](README.md)
 
-Layer 8 Serialization (L8SRLZ) is a cross-platform, high-performance object serialization library designed for microservices environments. It provides efficient binary serialization with Protocol Buffers integration, dynamic type registry, query-based data selection capabilities, and comprehensive filtering modes for enhanced data processing.
+Layer 8 Serialization (L8SRLZ) is a cross-platform, high-performance object serialization library designed for microservices environments. It provides efficient binary serialization with Protocol Buffers integration, dynamic type registry, query-based data selection capabilities, comprehensive filtering modes for enhanced data processing, and replica support for distributed systems.
 
 ## 🚀 Features
 
@@ -12,8 +13,9 @@ Layer 8 Serialization (L8SRLZ) is a cross-platform, high-performance object seri
 - **High Performance**: Optimized binary encoding with minimal memory allocations
 - **Protocol Buffers Integration**: Seamless protobuf message serialization
 - **Dynamic Type Registry**: Runtime type resolution for complex object graphs
-- **Query Language Support**: GSQL integration for selective data serialization
+- **Query Language Support**: L8QL (Layer 8 Query Language) integration for selective data serialization
 - **Microservices Ready**: Designed for distributed systems and delta data sharing
+- **Replica Support**: Built-in replication mechanism with replica number tracking
 - **Thread-Safe**: Concurrent-safe operations with proper synchronization
 - **Base64 Encoding**: Built-in text encoding for network transmission
 - **Advanced Filtering**: Multiple filter modes for data processing and selection
@@ -48,7 +50,8 @@ The library consists of several key architectural components:
 - **Elements Container**: Multi-object container with query support and error handling
 - **Type Handlers**: Specialized serializers for primitive and complex types
 - **Registry System**: Dynamic type resolution for deserialization
-- **Query Integration**: GSQL language support for selective serialization
+- **Query Integration**: L8QL language support for selective serialization
+- **Replica System**: Support for data replication and replica tracking
 - **Filter System**: Advanced filtering capabilities with multiple modes
 - **Statistics Module**: Performance monitoring and data analysis
 - **Page Manager**: Efficient pagination and streaming support
@@ -284,6 +287,28 @@ if err != nil {
 // userList is now a properly typed list structure
 ```
 
+### Replica Support
+
+```go
+// Create original elements
+original := object.New(nil, myData)
+
+// Create replica request with replica number
+replicaRequest := object.NewReplicaRequest(original, byte(1))
+
+// Check if element is a replica
+if replicaRequest.IsReplica() {
+    replicaNum := replicaRequest.Replica()
+    fmt.Printf("Processing replica #%d\n", replicaNum)
+}
+
+// Serialize replica request
+data, err := replicaRequest.Serialize()
+if err != nil {
+    return err
+}
+```
+
 ## ⚡ Performance
 
 The library is optimized for high-performance scenarios:
@@ -369,8 +394,9 @@ We welcome contributions! Please see our contributing guidelines:
 ### Go Dependencies
 - `google.golang.org/protobuf` - Protocol Buffers support
 - `github.com/saichler/l8types` - Type system interfaces
-- `github.com/saichler/gsql` - Query language support
+- `github.com/saichler/l8ql` - L8QL query language support
 - `github.com/saichler/l8utils` - Utility functions
+- `github.com/saichler/l8test` - Testing utilities
 
 ### Java Dependencies
 - `protobuf-java` - Protocol Buffers support
@@ -384,8 +410,12 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## 🔗 Related Projects
 
 - [L8Types](https://github.com/saichler/l8types) - Type system and interfaces
-- [GSQL](https://github.com/saichler/gsql) - Query language implementation
+- [L8QL](https://github.com/saichler/l8ql) - L8 Query Language implementation
 - [L8Utils](https://github.com/saichler/l8utils) - Utility libraries
+- [L8Test](https://github.com/saichler/l8test) - Testing framework utilities
+- [L8Reflect](https://github.com/saichler/l8reflect) - Reflection utilities
+- [L8Bus](https://github.com/saichler/l8bus) - Message bus implementation
+- [L8Services](https://github.com/saichler/l8services) - Service framework
 
 ## 📞 Support
 
@@ -395,14 +425,37 @@ For questions, issues, or contributions:
 - Check existing documentation
 - Review test cases for usage examples
 
+## 📅 Recent Updates (October 2025)
+
+### New Features
+- **Replica Support**: Added built-in replication mechanism with replica number tracking
+- **L8QL Integration**: Renamed and enhanced query language from GSQL to L8QL
+- **Stability Improvements**: Fixed multiple crash scenarios and improved error handling
+- **Performance Analysis**: Added comprehensive performance documentation
+
+### Improvements
+- Enhanced Elements container with replica request capabilities
+- Improved type handling and enum support
+- Optimized buffer management for better performance
+- Added comprehensive test coverage for new features
+
 ## 🗺️ Roadmap
 
+### Completed Features
+- [x] Replica support for distributed systems
+- [x] L8QL query language integration
+- [x] Statistics and performance monitoring
+- [x] Page-based data handling
+- [x] Advanced filtering modes
+- [x] Enum type support
+
+### Future Enhancements
 - [ ] Performance optimizations (buffer pooling, type switches)
 - [ ] Additional language bindings (Python, C++)
-- [ ] Enhanced query language features
+- [ ] Enhanced L8QL query features
 - [ ] Streaming serialization support
 - [ ] Compression integration
-- [ ] Metrics and monitoring integration
+- [ ] Advanced metrics and monitoring
 
 ---
 
