@@ -28,7 +28,7 @@ type Element struct {
 
 func NewQuery(gsql string, resources ifs.IResources) (*Elements, error) {
 	if gsql == "" {
-		return New(nil, &interpreter.Query{}), nil
+		return New(nil, &l8api.L8Query{}), nil
 	}
 	q, e := interpreter.NewQuery(gsql, resources)
 	if e != nil {
