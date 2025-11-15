@@ -13,7 +13,7 @@ type Elements struct {
 	elements     []*Element
 	query        ifs.IQuery
 	pquery       *l8api.L8Query
-	stats        map[string]int32
+	counts       *l8api.L8Counts
 	notification bool
 
 	isReplica bool
@@ -96,9 +96,9 @@ func New(err error, any interface{}) *Elements {
 	return result
 }
 
-func NewQueryResult(any interface{}, stats map[string]int32) *Elements {
+func NewQueryResult(any interface{}, counts *l8api.L8Counts) *Elements {
 	elements := New(nil, any)
-	elements.stats = stats
+	elements.counts = counts
 	return elements
 }
 
@@ -191,11 +191,14 @@ func (this *Elements) Serialize() ([]byte, error) {
 		}
 	}
 
-	if this.stats == nil || len(this.stats) == 0 {
-		this.stats = make(map[string]int32)
-		this.stats["Total"] = int32(len(this.elements))
+	if this.counts == nil {
+		this.counts = &l8api.L8Counts{}
+		this.counts.Counts = &l8api.L8ValueCount{}
+		this.counts.Counts.Counts = make(map[string]int32)
+		this.counts.ValueCounts = make(map[string]*l8api.L8ValueCount)
+		this.counts.Counts.Counts["Total"] = int32(len(this.elements))
 	}
-	obj.Add(this.stats)
+	obj.Add(this.counts)
 
 	obj.Add(this.pquery)
 	return obj.Data(), nil
@@ -241,7 +244,7 @@ func (this *Elements) Deserialize(data []byte, r ifs.IRegistry) error {
 	if err != nil {
 		return err
 	}
-	this.stats, _ = st.(map[string]int32)
+	this.counts, _ = st.(*l8api.L8Counts)
 
 	pq, err := obj.Get()
 	if err != nil {
@@ -301,9 +304,9 @@ func (this *Elements) AsList(r ifs.IRegistry) (interface{}, error) {
 	}
 	f.Set(newList)
 
-	f = v.FieldByName("Stats")
+	f = v.FieldByName("Counts")
 	if f.IsValid() && f.CanSet() {
-		f.Set(reflect.ValueOf(this.stats))
+		f.Set(reflect.ValueOf(this.counts))
 	}
 
 	return listItem, nil
