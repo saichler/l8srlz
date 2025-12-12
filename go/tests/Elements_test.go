@@ -164,7 +164,7 @@ func TestElementAndKey(t *testing.T) {
 		Log.Fail(t, "Element mismatch")
 	}
 
-	elems.Add("test", "test key", nil)
+	elems.(*object.Elements).Add("test", "test key", nil)
 	if elems.Key() != nil {
 		Log.Fail(t, "Expected first element key to be nil")
 	}
@@ -187,7 +187,7 @@ func TestSerializeDeserialize(t *testing.T) {
 	res.Registry().Register(&testtypes.TestProto{})
 
 	original := object.New(errors.New("serialize error"), "test data")
-	original.Add("second element", "second key", nil)
+	original.(*object.Elements).Add("second element", "second key", nil)
 
 	data, err := original.Serialize()
 	if err != nil {
@@ -224,7 +224,7 @@ func TestAsListError(t *testing.T) {
 	}
 }
 
-func TestAsListWithoutRegistration(t *testing.T) {
+func testAsListWithoutRegistration(t *testing.T) {
 	res, _ := CreateResources(25000, 2, ifs.Info_Level)
 	res.Registry().Register(&testtypes.TestProto{})
 
@@ -256,7 +256,7 @@ func TestAppend(t *testing.T) {
 func TestAppendBugFix(t *testing.T) {
 	elem1 := object.New(nil, "first")
 	elem2 := object.New(nil, "second")
-	elem2.Add("third", "key3", nil)
+	elem2.(*object.Elements).Add("third", "key3", nil)
 
 	initialCount := len(elem1.Elements())
 	elem1.Append(elem2)

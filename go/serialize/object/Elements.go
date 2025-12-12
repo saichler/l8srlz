@@ -26,7 +26,7 @@ type Element struct {
 	error   error
 }
 
-func NewQuery(gsql string, resources ifs.IResources) (*Elements, error) {
+func NewQuery(gsql string, resources ifs.IResources) (ifs.IElements, error) {
 	if gsql == "" {
 		return New(nil, &l8api.L8Query{}), nil
 	}
@@ -38,13 +38,13 @@ func NewQuery(gsql string, resources ifs.IResources) (*Elements, error) {
 	return elems, nil
 }
 
-func NewNotify(any interface{}) *Elements {
+func NewNotify(any interface{}) ifs.IElements {
 	elems := New(nil, any)
-	elems.notification = true
+	elems.(*Elements).notification = true
 	return elems
 }
 
-func NewReplicaRequest(elems ifs.IElements, replica byte) *Elements {
+func NewReplicaRequest(elems ifs.IElements, replica byte) ifs.IElements {
 	c := clone(elems)
 	c.replica = replica
 	c.isReplica = true
@@ -62,7 +62,7 @@ func clone(e ifs.IElements) *Elements {
 	return c
 }
 
-func New(err error, any interface{}) *Elements {
+func New(err error, any interface{}) ifs.IElements {
 
 	if reflect.ValueOf(any).Kind() == reflect.Func {
 		panic("any is a function, this is probably a mistake")
@@ -96,13 +96,13 @@ func New(err error, any interface{}) *Elements {
 	return result
 }
 
-func NewQueryResult(any interface{}, metadata *l8api.L8MetaData) *Elements {
+func NewQueryResult(any interface{}, metadata *l8api.L8MetaData) ifs.IElements {
 	elements := New(nil, any)
-	elements.metadata = metadata
+	elements.(*Elements).metadata = metadata
 	return elements
 }
 
-func NewError(err string) *Elements {
+func NewError(err string) ifs.IElements {
 	return New(errors.New(err), nil)
 }
 
