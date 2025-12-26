@@ -1,3 +1,17 @@
+/*
+© 2025 Sharon Aicler (saichler@gmail.com)
+
+Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package object
 
 import (
@@ -7,6 +21,13 @@ import (
 	"reflect"
 )
 
+// addStruct serializes a Protocol Buffers message to binary format.
+// Format: size (int32), type name (string), protobuf bytes.
+// Special cases:
+//   - nil: size = -1
+//   - empty message: size = -2
+//
+// Uses Google's protobuf library for the actual message serialization.
 func addStruct(any interface{}, data *[]byte, location *int) error {
 	if any == nil {
 		addInt32(int32(-1), data, location)
@@ -45,6 +66,11 @@ func addStruct(any interface{}, data *[]byte, location *int) error {
 	return nil
 }
 
+// getStruct deserializes a Protocol Buffers message from binary format.
+// Uses the registry to look up the type by name and create a new instance.
+// The protobuf bytes are then unmarshaled into the instance.
+//
+// Returns an error if the type is not registered or unmarshaling fails.
 func getStruct(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
 	l := getInt32(data, location)
 	size := int(l)

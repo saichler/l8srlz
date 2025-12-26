@@ -1,3 +1,17 @@
+/*
+© 2025 Sharon Aicler (saichler@gmail.com)
+
+Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package tests
 
 import (
@@ -8,6 +22,9 @@ import (
 	"testing"
 )
 
+// testType is a helper function that serializes a value, then deserializes it
+// and returns the result for comparison. This provides a convenient round-trip
+// test pattern used by the individual type tests.
 func testType(val interface{}) (interface{}, error) {
 	e := object.NewEncode()
 	err := e.Add(val)
@@ -23,6 +40,7 @@ func testType(val interface{}) (interface{}, error) {
 	return dval, nil
 }
 
+// TestInt tests serialization of platform-dependent int type.
 func TestInt(t *testing.T) {
 	val := int(-39)
 	dval, err := testType(val)
@@ -37,6 +55,7 @@ func TestInt(t *testing.T) {
 	}
 }
 
+// TestInt32 tests serialization of 32-bit signed integer.
 func TestInt32(t *testing.T) {
 	val := int32(-39)
 	dval, err := testType(val)
@@ -51,6 +70,7 @@ func TestInt32(t *testing.T) {
 	}
 }
 
+// TestInt64 tests serialization of 64-bit signed integer.
 func TestInt64(t *testing.T) {
 	val := int64(-39)
 	dval, err := testType(val)
@@ -65,6 +85,7 @@ func TestInt64(t *testing.T) {
 	}
 }
 
+// TestUInt32 tests serialization of 32-bit unsigned integer.
 func TestUInt32(t *testing.T) {
 	val := uint32(39)
 	dval, err := testType(val)
@@ -79,6 +100,7 @@ func TestUInt32(t *testing.T) {
 	}
 }
 
+// TestUInt64 tests serialization of 64-bit unsigned integer.
 func TestUInt64(t *testing.T) {
 	val := uint64(39)
 	dval, err := testType(val)
@@ -93,6 +115,7 @@ func TestUInt64(t *testing.T) {
 	}
 }
 
+// TestFloat64 tests serialization of 64-bit floating point number.
 func TestFloat64(t *testing.T) {
 	val := float64(39.39)
 	dval, err := testType(val)
@@ -107,6 +130,7 @@ func TestFloat64(t *testing.T) {
 	}
 }
 
+// TestFloat32 tests serialization of 32-bit floating point number.
 func TestFloat32(t *testing.T) {
 	val := float32(39.39)
 	dval, err := testType(val)
@@ -121,6 +145,7 @@ func TestFloat32(t *testing.T) {
 	}
 }
 
+// TestPbString tests serialization of string values.
 func TestPbString(t *testing.T) {
 	val := "Hello World"
 	dval, err := testType(val)
@@ -135,6 +160,7 @@ func TestPbString(t *testing.T) {
 	}
 }
 
+// TestProtoType tests serialization of Protocol Buffers messages with data.
 func TestProtoType(t *testing.T) {
 	val := CreateTestModelInstance(1)
 	globals.Registry().Register(val)
@@ -150,6 +176,7 @@ func TestProtoType(t *testing.T) {
 	}
 }
 
+// TestEmptyProtoType tests serialization of empty Protocol Buffers messages.
 func TestEmptyProtoType(t *testing.T) {
 	val := &testtypes.TestProto{}
 	globals.Registry().Register(val)
@@ -165,6 +192,7 @@ func TestEmptyProtoType(t *testing.T) {
 	}
 }
 
+// TestSliceOfInt32 tests serialization of int32 slices.
 func TestSliceOfInt32(t *testing.T) {
 	val := []int32{1, 2, 3, 4, 5}
 	dval, err := testType(val)
@@ -185,6 +213,7 @@ func TestSliceOfInt32(t *testing.T) {
 	}
 }
 
+// TestSliceOfString tests serialization of string slices.
 func TestSliceOfString(t *testing.T) {
 	val := []string{"1", "2", "3", "4", "5"}
 	dval, err := testType(val)
@@ -205,6 +234,7 @@ func TestSliceOfString(t *testing.T) {
 	}
 }
 
+// TestSliceOfProto tests serialization of Protocol Buffers message slices.
 func TestSliceOfProto(t *testing.T) {
 	proto1 := &testtypes.TestProto{}
 	proto1.MyString = "UUID-1"
@@ -233,6 +263,7 @@ func TestSliceOfProto(t *testing.T) {
 	}
 }
 
+// TestNilSlice tests that nil slices serialize and deserialize correctly.
 func TestNilSlice(t *testing.T) {
 	var val []*testtypes.TestProto
 	dval, err := testType(val)
@@ -247,6 +278,7 @@ func TestNilSlice(t *testing.T) {
 	}
 }
 
+// TestNilProto tests that nil Protocol Buffers pointers serialize correctly.
 func TestNilProto(t *testing.T) {
 	var val *testtypes.TestProto
 	dval, err := testType(val)
@@ -261,6 +293,7 @@ func TestNilProto(t *testing.T) {
 	}
 }
 
+// TestSliceOfProtoWithNil tests slices containing nil Protocol Buffers elements.
 func TestSliceOfProtoWithNil(t *testing.T) {
 	proto1 := &testtypes.TestProto{}
 	proto1.MyString = "UUID-1"
@@ -292,6 +325,7 @@ func TestSliceOfProtoWithNil(t *testing.T) {
 	}
 }
 
+// TestMapOfString2Int32 tests serialization of string-to-int32 maps.
 func TestMapOfString2Int32(t *testing.T) {
 	val := make(map[string]int32)
 	val["1"] = 1
@@ -315,6 +349,7 @@ func TestMapOfString2Int32(t *testing.T) {
 	}
 }
 
+// TestMapOfInt322String tests serialization of int32-to-string maps.
 func TestMapOfInt322String(t *testing.T) {
 	val := make(map[int32]string)
 	val[1] = "1"
@@ -338,6 +373,7 @@ func TestMapOfInt322String(t *testing.T) {
 	}
 }
 
+// TestMapOfString2Proto tests serialization of string-to-Protocol Buffers maps.
 func TestMapOfString2Proto(t *testing.T) {
 	proto1 := &testtypes.TestProto{}
 	proto1.MyString = "UUID-1"
@@ -370,6 +406,7 @@ func TestMapOfString2Proto(t *testing.T) {
 	}
 }
 
+// TestMapOfString2ProtoWithNil tests maps containing nil Protocol Buffers values.
 func TestMapOfString2ProtoWithNil(t *testing.T) {
 	proto1 := &testtypes.TestProto{}
 	proto1.MyString = "UUID-1"
@@ -406,6 +443,7 @@ func TestMapOfString2ProtoWithNil(t *testing.T) {
 	}
 }
 
+// TestBool tests serialization of boolean values (true and false).
 func TestBool(t *testing.T) {
 	val := true
 	dval, err := testType(val)

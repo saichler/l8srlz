@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/go-1.23.8+-blue.svg)](https://golang.org/)
 [![Java Version](https://img.shields.io/badge/java-11+-blue.svg)](https://openjdk.java.net/)
-[![Last Updated](https://img.shields.io/badge/last%20updated-October%202025-brightgreen.svg)](README.md)
+[![Last Updated](https://img.shields.io/badge/last%20updated-December%202025-brightgreen.svg)](README.md)
 
 Layer 8 Serialization (L8SRLZ) is a cross-platform, high-performance object serialization library designed for microservices environments. It provides efficient binary serialization with Protocol Buffers integration, dynamic type registry, query-based data selection capabilities, comprehensive filtering modes for enhanced data processing, and replica support for distributed systems.
 
@@ -425,9 +425,13 @@ For questions, issues, or contributions:
 - Check existing documentation
 - Review test cases for usage examples
 
-## 📅 Recent Updates (October 2025)
+## 📅 Recent Updates (December 2025)
 
 ### New Features
+- **Apache 2.0 License**: Added comprehensive Apache License 2.0 copyright headers to all source files
+- **Copyright Attribution**: Full copyright attribution to Sharon Aicler (saichler@gmail.com) across all Go source files
+
+### Previous Updates (October 2025)
 - **Replica Support**: Added built-in replication mechanism with replica number tracking
 - **L8QL Integration**: Renamed and enhanced query language from GSQL to L8QL
 - **Stability Improvements**: Fixed multiple crash scenarios and improved error handling
@@ -438,6 +442,7 @@ For questions, issues, or contributions:
 - Improved type handling and enum support
 - Optimized buffer management for better performance
 - Added comprehensive test coverage for new features
+- Added proper licensing and copyright headers to all source files
 
 ## 🗺️ Roadmap
 

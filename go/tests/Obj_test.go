@@ -1,3 +1,17 @@
+/*
+© 2025 Sharon Aicler (saichler@gmail.com)
+
+Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package tests
 
 import (
@@ -10,7 +24,9 @@ import (
 	"github.com/saichler/l8types/go/testtypes"
 )
 
-// Test basic primitive types serialization/deserialization
+// TestObj_PrimitiveTypes provides comprehensive testing of primitive type
+// serialization including edge cases for min/max values, zero values,
+// and special cases like unicode strings.
 func TestObj_PrimitiveTypes(t *testing.T) {
 	tests := []struct {
 		name string
@@ -71,7 +87,8 @@ func TestObj_PrimitiveTypes(t *testing.T) {
 	}
 }
 
-// Test slice serialization/deserialization
+// TestObj_Slices tests serialization of various slice types including
+// int32, string, float64, bool, and byte slices with empty and populated data.
 func TestObj_Slices(t *testing.T) {
 	tests := []struct {
 		name string
@@ -180,7 +197,8 @@ func TestObj_Slices(t *testing.T) {
 	}
 }
 
-// Test map serialization/deserialization
+// TestObj_Maps tests serialization of various map types including
+// string-to-int32, int32-to-string, and string-to-float64/bool maps.
 func TestObj_Maps(t *testing.T) {
 	tests := []struct {
 		name string
@@ -270,7 +288,7 @@ func TestObj_Maps(t *testing.T) {
 	}
 }
 
-// Test nil values
+// TestObj_NilValues tests proper handling of nil slices, maps, and pointers.
 func TestObj_NilValues(t *testing.T) {
 	tests := []struct {
 		name string
@@ -307,7 +325,8 @@ func TestObj_NilValues(t *testing.T) {
 	}
 }
 
-// Test protobuf structs
+// TestObj_ProtoStructs tests Protocol Buffers message serialization
+// with populated fields.
 func TestObj_ProtoStructs(t *testing.T) {
 	// Create test proto
 	proto := &testtypes.TestProto{
@@ -352,7 +371,7 @@ func TestObj_ProtoStructs(t *testing.T) {
 	}
 }
 
-// Test empty protobuf struct
+// TestObj_EmptyProtoStruct tests serialization of empty Protocol Buffers messages.
 func TestObj_EmptyProtoStruct(t *testing.T) {
 	// Create empty test proto
 	proto := &testtypes.TestProto{}
@@ -387,7 +406,7 @@ func TestObj_EmptyProtoStruct(t *testing.T) {
 	}
 }
 
-// Test Base64 encoding/decoding
+// TestObj_Base64 tests Base64 encoding and decoding round-trip.
 func TestObj_Base64(t *testing.T) {
 	testValue := "Hello, Base64!"
 	
@@ -429,7 +448,7 @@ func TestObj_Base64(t *testing.T) {
 	}
 }
 
-// Test utility functions DataOf and ElemOf
+// TestObj_UtilityFunctions tests the DataOf and ElemOf convenience functions.
 func TestObj_UtilityFunctions(t *testing.T) {
 	testValue := int32(12345)
 	
@@ -454,7 +473,7 @@ func TestObj_UtilityFunctions(t *testing.T) {
 	}
 }
 
-// Test nil values in utility functions
+// TestObj_UtilityFunctions_Nil tests DataOf and ElemOf with nil inputs.
 func TestObj_UtilityFunctions_Nil(t *testing.T) {
 	// Test DataOf with nil
 	data, err := object.DataOf(nil)
@@ -475,7 +494,8 @@ func TestObj_UtilityFunctions_Nil(t *testing.T) {
 	}
 }
 
-// Test large data serialization (performance test)
+// TestObj_LargeData tests serialization of large slices (100,000 elements)
+// to verify buffer expansion and performance under load.
 func TestObj_LargeData(t *testing.T) {
 	// Create large slice
 	largeSlice := make([]int32, 100000)
@@ -516,7 +536,8 @@ func TestObj_LargeData(t *testing.T) {
 	}
 }
 
-// Test buffer expansion
+// TestObj_BufferExpansion tests the exponential buffer growth strategy
+// by adding many items to force multiple buffer expansions.
 func TestObj_BufferExpansion(t *testing.T) {
 	obj := object.NewEncode()
 	
@@ -541,7 +562,7 @@ func TestObj_BufferExpansion(t *testing.T) {
 	}
 }
 
-// Helper functions for slice comparisons
+// compareInt32Slices compares two int32 slices for equality.
 func compareInt32Slices(a, b []int32) bool {
 	if len(a) != len(b) {
 		return false
@@ -554,6 +575,7 @@ func compareInt32Slices(a, b []int32) bool {
 	return true
 }
 
+// compareStringSlices compares two string slices for equality.
 func compareStringSlices(a, b []string) bool {
 	if len(a) != len(b) {
 		return false
@@ -566,6 +588,7 @@ func compareStringSlices(a, b []string) bool {
 	return true
 }
 
+// compareFloat64Slices compares two float64 slices for equality.
 func compareFloat64Slices(a, b []float64) bool {
 	if len(a) != len(b) {
 		return false
@@ -578,6 +601,7 @@ func compareFloat64Slices(a, b []float64) bool {
 	return true
 }
 
+// compareBoolSlices compares two bool slices for equality.
 func compareBoolSlices(a, b []bool) bool {
 	if len(a) != len(b) {
 		return false
@@ -590,7 +614,7 @@ func compareBoolSlices(a, b []bool) bool {
 	return true
 }
 
-// Helper functions for map comparisons
+// compareStringInt32Maps compares two string-to-int32 maps for equality.
 func compareStringInt32Maps(a, b map[string]int32) bool {
 	if len(a) != len(b) {
 		return false
@@ -603,6 +627,7 @@ func compareStringInt32Maps(a, b map[string]int32) bool {
 	return true
 }
 
+// compareInt32StringMaps compares two int32-to-string maps for equality.
 func compareInt32StringMaps(a, b map[int32]string) bool {
 	if len(a) != len(b) {
 		return false
@@ -615,6 +640,7 @@ func compareInt32StringMaps(a, b map[int32]string) bool {
 	return true
 }
 
+// compareStringFloat64Maps compares two string-to-float64 maps for equality.
 func compareStringFloat64Maps(a, b map[string]float64) bool {
 	if len(a) != len(b) {
 		return false
@@ -627,6 +653,7 @@ func compareStringFloat64Maps(a, b map[string]float64) bool {
 	return true
 }
 
+// compareStringBoolMaps compares two string-to-bool maps for equality.
 func compareStringBoolMaps(a, b map[string]bool) bool {
 	if len(a) != len(b) {
 		return false

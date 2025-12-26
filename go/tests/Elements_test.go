@@ -1,3 +1,17 @@
+/*
+© 2025 Sharon Aicler (saichler@gmail.com)
+
+Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package tests
 
 import (
@@ -14,6 +28,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// TestElements tests basic Elements container serialization and deserialization,
+// including handling of errors embedded within elements.
 func TestElements(t *testing.T) {
 	res, _ := CreateResources(25000, 2, ifs.Info_Level)
 	res.Registry().Register(&testtypes.TestProto{})
@@ -46,6 +62,8 @@ func TestElements(t *testing.T) {
 
 }
 
+// TestElementsList tests the AsList functionality for converting elements
+// to typed Protocol Buffers list structures.
 func TestElementsList(t *testing.T) {
 	res, _ := CreateResources(25000, 2, ifs.Info_Level)
 	res.Registry().Register(&testtypes.TestProto{})
@@ -65,6 +83,7 @@ func TestElementsList(t *testing.T) {
 	fmt.Println(string(json))
 }
 
+// TestNewError verifies the NewError constructor creates elements with proper error state.
 func TestNewError(t *testing.T) {
 	elems := object.NewError("test error")
 	if elems.Error().Error() != "test error" {
@@ -72,6 +91,7 @@ func TestNewError(t *testing.T) {
 	}
 }
 
+// TestNewNotify tests the notification flag functionality.
 func TestNewNotify(t *testing.T) {
 	testData := "test notification"
 	elems := object.NewNotify(testData)
@@ -83,6 +103,7 @@ func TestNewNotify(t *testing.T) {
 	}
 }
 
+// TestNewReplicasRequest tests the replica request creation for distributed systems.
 func TestNewReplicasRequest(t *testing.T) {
 	original := object.New(nil, "test")
 	replica := object.NewReplicaRequest(original, 0)
@@ -91,6 +112,7 @@ func TestNewReplicasRequest(t *testing.T) {
 	}
 }
 
+// TestNewWithSlice verifies that slices are properly expanded into elements.
 func TestNewWithSlice(t *testing.T) {
 	slice := []string{"item1", "item2", "item3"}
 	elems := object.New(nil, slice)
@@ -108,6 +130,7 @@ func TestNewWithSlice(t *testing.T) {
 	}
 }
 
+// TestNewWithMap verifies that maps are properly expanded into elements with keys.
 func TestNewWithMap(t *testing.T) {
 	testMap := map[string]int{"key1": 1, "key2": 2, "key3": 3}
 	elems := object.New(nil, testMap)
@@ -123,6 +146,7 @@ func TestNewWithMap(t *testing.T) {
 	}
 }
 
+// TestNewWithFunction verifies that passing a function panics as expected.
 func TestNewWithFunction(t *testing.T) {
 	defer func() {
 		if r := recover(); r == nil {
@@ -132,6 +156,7 @@ func TestNewWithFunction(t *testing.T) {
 	object.New(nil, func() {})
 }
 
+// TestAdd tests the Add method for incrementally building elements.
 func TestAdd(t *testing.T) {
 	elems := &object.Elements{}
 	elems.Add("element1", "key1", nil)
@@ -158,6 +183,7 @@ func TestAdd(t *testing.T) {
 	}
 }
 
+// TestElementAndKey tests single element and key retrieval.
 func TestElementAndKey(t *testing.T) {
 	elems := object.New(nil, "single element")
 	if elems.Element() != "single element" {
@@ -170,6 +196,7 @@ func TestElementAndKey(t *testing.T) {
 	}
 }
 
+// TestErrorHandling tests error association with elements.
 func TestErrorHandling(t *testing.T) {
 	elems := object.New(errors.New("test error"), "data")
 	if elems.Error().Error() != "test error" {
@@ -182,6 +209,7 @@ func TestErrorHandling(t *testing.T) {
 	}
 }
 
+// TestSerializeDeserialize tests full round-trip serialization of elements.
 func TestSerializeDeserialize(t *testing.T) {
 	res, _ := CreateResources(25000, 2, ifs.Info_Level)
 	res.Registry().Register(&testtypes.TestProto{})
@@ -211,6 +239,7 @@ func TestSerializeDeserialize(t *testing.T) {
 	}
 }
 
+// TestAsListError tests error handling in AsList for empty elements.
 func TestAsListError(t *testing.T) {
 	res, _ := CreateResources(25000, 2, ifs.Info_Level)
 
@@ -242,6 +271,7 @@ func testAsListWithoutRegistration(t *testing.T) {
 	}
 }
 
+// TestAppend tests merging elements from multiple containers.
 func TestAppend(t *testing.T) {
 	elem1 := object.New(nil, "first")
 	elem2 := object.New(nil, "second")
@@ -253,6 +283,7 @@ func TestAppend(t *testing.T) {
 	}
 }
 
+// TestAppendBugFix verifies the append behavior with multiple elements.
 func TestAppendBugFix(t *testing.T) {
 	elem1 := object.New(nil, "first")
 	elem2 := object.New(nil, "second")

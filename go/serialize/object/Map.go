@@ -1,3 +1,17 @@
+/*
+© 2025 Sharon Aicler (saichler@gmail.com)
+
+Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package object
 
 import (
@@ -5,6 +19,10 @@ import (
 	"reflect"
 )
 
+// addMap serializes a Go map to binary format.
+// Format: count (int32) followed by key-value pairs.
+// Nil or empty maps are encoded as -1.
+// Uses reflection to iterate over any map type.
 func addMap(any interface{}, data *[]byte, location *int) error {
 	if any == nil {
 		addInt32(int32(-1), data, location)
@@ -30,6 +48,9 @@ func addMap(any interface{}, data *[]byte, location *int) error {
 	return nil
 }
 
+// getMap deserializes a map from binary format.
+// It reconstructs the typed map using reflection, inferring key and value
+// types from the first non-nil entry. Handles nil values correctly.
 func getMap(data *[]byte, location *int, registry ifs.IRegistry) (interface{}, error) {
 	l := getInt32(data, location)
 	size := int(l)
