@@ -120,7 +120,7 @@ func (this *Object) Location() int {
 // proper deserialization.
 //
 // Supported types:
-//   - Primitives: int, int32, int64, uint32, uint64, float32, float64, string, bool
+//   - Primitives: int, int32, int64, uint32, uint64, float32, float64, string, bool, byte
 //   - Complex: slices, maps, pointers to structs (Protocol Buffers)
 //
 // Returns an error if the type is not supported.
@@ -162,6 +162,10 @@ func (this *Object) Add(any interface{}) error {
 	case bool:
 		this.addKind(reflect.Bool)
 		addBool(v, this.data, this.location)
+		return nil
+	case byte:
+		this.addKind(reflect.Uint8)
+		addByte(v, this.data, this.location)
 		return nil
 	case types.Slice:
 		this.addKind(reflect.Slice)
@@ -224,6 +228,8 @@ func (this *Object) Get() (interface{}, error) {
 		return getFloat64(this.data, this.location), nil
 	case reflect.String:
 		return getString(this.data, this.location), nil
+	case reflect.Uint8:
+		return getByte(this.data, this.location), nil
 	case reflect.Bool:
 		return getBool(this.data, this.location), nil
 	case reflect.Slice:

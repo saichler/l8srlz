@@ -443,6 +443,24 @@ func TestMapOfString2ProtoWithNil(t *testing.T) {
 	}
 }
 
+// TestByte tests serialization of single byte values.
+func TestByte(t *testing.T) {
+	values := []byte{0, 42, 255}
+	for _, val := range values {
+		dval, err := testType(val)
+		if err != nil {
+			Log.Error("Failed for byte value:", strconv.Itoa(int(val)))
+			t.Fail()
+			return
+		}
+		res := dval.(byte)
+		if res != val {
+			Log.Error("Value do not match:", strconv.Itoa(int(res)), " and ", strconv.Itoa(int(val)))
+			t.Fail()
+		}
+	}
+}
+
 // TestBool tests serialization of boolean values (true and false).
 func TestBool(t *testing.T) {
 	val := true
