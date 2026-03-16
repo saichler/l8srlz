@@ -196,6 +196,12 @@ func (this *Object) Add(any interface{}) error {
 		addInt32(int32(reflect.ValueOf(any).Int()), this.data, this.location)
 		return nil
 	}
+	//Special case for named types with underlying uint8
+	if kind == reflect.Uint8 {
+		this.addKind(reflect.Uint8)
+		addByte(byte(reflect.ValueOf(any).Uint()), this.data, this.location)
+		return nil
+	}
 	//panic("Did not find any Object for kind " + kind.String())
 	return errors.New("Did not find any Object for kind " + kind.String())
 }
