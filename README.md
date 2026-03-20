@@ -1,13 +1,13 @@
 # Layer 8 Serialization - High-Performance Object Serialization Library
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Go Version](https://img.shields.io/badge/go-1.23.8+-blue.svg)](https://golang.org/)
+[![Go Version](https://img.shields.io/badge/go-1.25.4+-blue.svg)](https://golang.org/)
 [![Java Version](https://img.shields.io/badge/java-11+-blue.svg)](https://openjdk.java.net/)
-[![Last Updated](https://img.shields.io/badge/last%20updated-December%202025-brightgreen.svg)](README.md)
+[![Last Updated](https://img.shields.io/badge/last%20updated-March%202026-brightgreen.svg)](README.md)
 
 Layer 8 Serialization (L8SRLZ) is a cross-platform, high-performance object serialization library designed for microservices environments. It provides efficient binary serialization with Protocol Buffers integration, dynamic type registry, query-based data selection capabilities, comprehensive filtering modes for enhanced data processing, and replica support for distributed systems.
 
-## 🚀 Features
+## Features
 
 - **Cross-Platform Support**: Native implementations in Go and Java
 - **High Performance**: Optimized binary encoding with minimal memory allocations
@@ -23,24 +23,45 @@ Layer 8 Serialization (L8SRLZ) is a cross-platform, high-performance object seri
 - **Page-based Processing**: Support for paginated data handling and streaming
 - **Comprehensive Testing**: Extensive test coverage with performance benchmarks
 
-## 📦 Project Structure
+## Project Structure
 
 ```
 l8srlz/
 ├── go/                     # Go implementation
 │   ├── serialize/
 │   │   ├── object/         # Core serialization engine
+│   │   │   ├── Object.go       # Main engine (buffer management, type detection)
+│   │   │   ├── Elements.go     # Multi-object container with query/metadata support
+│   │   │   ├── Struct.go       # Protocol Buffers message handler
+│   │   │   ├── Slice.go        # Collection serialization
+│   │   │   ├── Map.go          # Key-value map serialization
+│   │   │   ├── Int.go          # int serialization
+│   │   │   ├── Int32.go        # int32 serialization
+│   │   │   ├── Int64.go        # int64 serialization
+│   │   │   ├── UInt32.go       # uint32 serialization
+│   │   │   ├── UInt64.go       # uint64 serialization
+│   │   │   ├── Float32.go      # float32 serialization
+│   │   │   ├── Float64.go      # float64 serialization
+│   │   │   ├── String.go       # string serialization
+│   │   │   ├── Bool.go         # bool serialization
+│   │   │   └── Byte.go         # single byte serialization
 │   │   └── serializers/    # Serialization protocols
+│   │       ├── Serialize.go        # Default serializer instance
+│   │       └── ProtoBuffBinary.go  # Binary serializer implementing ISerializer
 │   └── tests/              # Comprehensive test suite
+│       ├── TestInit.go         # Test infrastructure setup
+│       ├── object_test.go      # Type serialization tests (30+ tests)
+│       ├── Elements_test.go    # Elements container tests
+│       └── Obj_test.go         # Object engine tests
 ├── java/                   # Java implementation
-│   ├── src/main/java/      # Java source code
-│   └── src/test/java/      # Java tests
+│   ├── src/                # Java source code and tests
+│   └── pom.xml             # Maven build configuration
 ├── web.html               # Interactive project documentation
 ├── LICENSE                 # Apache 2.0 License
 └── README.md              # This file
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ### Core Components
 
@@ -56,13 +77,18 @@ The library consists of several key architectural components:
 - **Statistics Module**: Performance monitoring and data analysis
 - **Page Manager**: Efficient pagination and streaming support
 
+### Serialization Format
+
+Each value is prefixed with its `reflect.Kind` as an int32 (4 bytes), enabling proper type identification during deserialization without prior schema knowledge. The buffer uses exponential growth (starting at 1024 bytes, doubling as needed) to minimize memory allocations.
+
 ### Supported Data Types
 
 #### Primitive Types
 - **Integers**: `int`, `int32`, `int64`, `uint32`, `uint64`
 - **Floating Point**: `float32`, `float64`
-- **Text**: `string` with efficient encoding
+- **Text**: `string` with length-prefixed encoding
 - **Boolean**: `bool`
+- **Byte**: single `byte` (uint8) values
 
 #### Complex Types
 - **Structs**: Protocol Buffers message serialization
@@ -70,7 +96,7 @@ The library consists of several key architectural components:
 - **Maps**: Key-value collections with type inference
 - **Pointers**: Automatic dereferencing with null safety
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Go Installation
 
@@ -78,19 +104,7 @@ The library consists of several key architectural components:
 go get github.com/saichler/l8srlz/go
 ```
 
-### Java Installation
-
-Add to your `pom.xml`:
-
-```xml
-<dependency>
-    <groupId>com.saichler.l8srlz</groupId>
-    <artifactId>java-serialization</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
-## 📝 Usage Examples
+## Usage Examples
 
 ### Basic Serialization (Go)
 
@@ -228,7 +242,7 @@ for i, err := range elements.Errors() {
 }
 ```
 
-## 🔧 Advanced Features
+## Advanced Features
 
 ### Custom Type Registration
 
@@ -309,7 +323,7 @@ if err != nil {
 }
 ```
 
-## ⚡ Performance
+## Performance
 
 The library is optimized for high-performance scenarios:
 
@@ -328,7 +342,7 @@ Based on comprehensive analysis, the library provides:
 - **Microsecond-level** latency for primitive types
 - **Linear scaling** with object complexity
 
-## 🧪 Testing
+## Testing
 
 ### Run Go Tests
 
@@ -337,12 +351,14 @@ cd go
 go test ./tests/... -v
 ```
 
-### Run Java Tests
+### Test Coverage
 
-```bash
-cd java
-mvn test
-```
+The test suite includes 30+ tests covering:
+- All primitive types (`int`, `int32`, `int64`, `uint32`, `uint64`, `float32`, `float64`, `string`, `bool`, `byte`)
+- Collections (`[]int32`, `[]string`, `[]proto.Message`, nil slices)
+- Maps (`map[string]int32`, `map[int32]string`, `map[string]proto.Message`)
+- Protocol Buffers messages (populated and empty)
+- Elements container (serialization, list conversion, error handling, notifications)
 
 ### Performance Testing
 
@@ -351,7 +367,7 @@ cd go
 go test -bench=. -benchmem ./tests/...
 ```
 
-## 🏗️ Building
+## Building
 
 ### Go Build
 
@@ -360,15 +376,7 @@ cd go
 go build ./...
 ```
 
-### Java Build
-
-```bash
-cd java
-mvn clean compile
-mvn package
-```
-
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see our contributing guidelines:
 
@@ -381,33 +389,33 @@ We welcome contributions! Please see our contributing guidelines:
 ### Development Setup
 
 1. Clone the repository
-2. Install Go 1.23.8+ and Java 11+
+2. Install Go 1.25.4+
 3. Install dependencies:
    ```bash
    cd go && go mod download
-   cd java && mvn dependency:resolve
    ```
 4. Run tests to verify setup
 
-## 📋 Dependencies
+## Dependencies
 
-### Go Dependencies
-- `google.golang.org/protobuf` - Protocol Buffers support
-- `github.com/saichler/l8types` - Type system interfaces
+### Go Dependencies (Direct)
+- `google.golang.org/protobuf` v1.36.11 - Protocol Buffers support
+- `github.com/saichler/l8types` - Type system interfaces (`ifs.IRegistry`, `ifs.IResources`, `ifs.IElements`, `ifs.ISerializer`)
 - `github.com/saichler/l8ql` - L8QL query language support
 - `github.com/saichler/l8utils` - Utility functions
 - `github.com/saichler/l8test` - Testing utilities
 
-### Java Dependencies
-- `protobuf-java` - Protocol Buffers support
-- `junit-jupiter` - Testing framework
-- `slf4j-api` - Logging interface
+### Go Dependencies (Indirect)
+- `github.com/saichler/l8reflect` - Reflection utilities
+- `github.com/saichler/l8bus` - Message bus
+- `github.com/saichler/l8services` - Service framework
+- `github.com/google/uuid` - UUID generation
 
-## 📄 License
+## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Related Projects
+## Related Projects
 
 - [L8Types](https://github.com/saichler/l8types) - Type system and interfaces
 - [L8QL](https://github.com/saichler/l8ql) - L8 Query Language implementation
@@ -417,7 +425,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - [L8Bus](https://github.com/saichler/l8bus) - Message bus implementation
 - [L8Services](https://github.com/saichler/l8services) - Service framework
 
-## 📞 Support
+## Support
 
 For questions, issues, or contributions:
 
@@ -425,26 +433,23 @@ For questions, issues, or contributions:
 - Check existing documentation
 - Review test cases for usage examples
 
-## 📅 Recent Updates (December 2025)
+## Recent Updates
 
-### New Features
+### March 2026
+- **Single Byte Support**: Added dedicated `byte` (uint8) serialization handler (`Byte.go`) with `addByte()`/`getByte()` methods, enabling efficient single-byte value serialization without the overhead of slice encoding
+- **Metadata Refactoring**: Renamed internal `stats`/`counts` to `metadata` for consistency with L8MetaData types
+- **Interface Improvements**: `Elements` methods now return interfaces instead of concrete instances for better abstraction
+
+### December 2025
 - **Apache 2.0 License**: Added comprehensive Apache License 2.0 copyright headers to all source files
-- **Copyright Attribution**: Full copyright attribution to Sharon Aicler (saichler@gmail.com) across all Go source files
+- **Documentation**: Added Go doc comments to all exported types and functions
 
-### Previous Updates (October 2025)
+### October 2025
 - **Replica Support**: Added built-in replication mechanism with replica number tracking
 - **L8QL Integration**: Renamed and enhanced query language from GSQL to L8QL
 - **Stability Improvements**: Fixed multiple crash scenarios and improved error handling
-- **Performance Analysis**: Added comprehensive performance documentation
 
-### Improvements
-- Enhanced Elements container with replica request capabilities
-- Improved type handling and enum support
-- Optimized buffer management for better performance
-- Added comprehensive test coverage for new features
-- Added proper licensing and copyright headers to all source files
-
-## 🗺️ Roadmap
+## Roadmap
 
 ### Completed Features
 - [x] Replica support for distributed systems
@@ -453,6 +458,7 @@ For questions, issues, or contributions:
 - [x] Page-based data handling
 - [x] Advanced filtering modes
 - [x] Enum type support
+- [x] Single byte serialization
 
 ### Future Enhancements
 - [ ] Performance optimizations (buffer pooling, type switches)
