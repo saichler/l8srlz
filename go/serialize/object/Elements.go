@@ -4,7 +4,7 @@
 Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
 You may obtain a copy of the License at:
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,11 +36,11 @@ import (
 //   - Notification flags for event-driven systems
 //   - Replica support for distributed systems
 type Elements struct {
-	elements     []*Element       // Slice of element wrappers
-	query        ifs.IQuery       // Parsed query object
-	pquery       *l8api.L8Query   // Protocol buffer query representation
+	elements     []*Element        // Slice of element wrappers
+	query        ifs.IQuery        // Parsed query object
+	pquery       *l8api.L8Query    // Protocol buffer query representation
 	metadata     *l8api.L8MetaData // Metadata including counts and pagination info
-	notification bool             // Flag indicating this is a notification
+	notification bool              // Flag indicating this is a notification
 
 	isReplica bool // Flag indicating this is a replica request
 	replica   byte // Replica number for distributed systems
@@ -280,8 +280,8 @@ func (this *Elements) Serialize() ([]byte, error) {
 	if this.metadata == nil {
 		this.metadata = &l8api.L8MetaData{}
 		this.metadata.KeyCount = &l8api.L8Count{}
-		this.metadata.KeyCount.Counts = make(map[string]int32)
-		this.metadata.KeyCount.Counts["Total"] = int32(len(this.elements))
+		this.metadata.KeyCount.Counts = make(map[string]float64)
+		this.metadata.KeyCount.Counts["Total"] = float64(len(this.elements))
 	}
 	obj.Add(this.metadata)
 

@@ -20,6 +20,7 @@ package tests
 
 import (
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/sec"
 	"github.com/saichler/l8types/go/types/l8sysconfig"
 	"github.com/saichler/l8utils/go/utils/logger"
 	"github.com/saichler/l8utils/go/utils/registry"
@@ -38,11 +39,8 @@ func init() {
 	_log.SetLogLevel(ifs.Trace_Level)
 	_resources := resources.NewResources(_log)
 	_resources.Set(registry.NewRegistry())
-	_security, err := ifs.LoadSecurityProvider(nil)
-	if err != nil {
-		panic("Failed to load security provider " + err.Error())
-	}
-	_resources.Set(_security)
+	sec, _ := sec.LoadSecurityProvider(_resources)
+	_resources.Set(sec)
 	_config := &l8sysconfig.L8SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
