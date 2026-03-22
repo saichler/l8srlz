@@ -419,6 +419,11 @@ func (this *Elements) AsList(r ifs.IRegistry) (interface{}, error) {
 	return listItem, nil
 }
 
+// Metadata returns the metadata associated with this elements collection.
+func (this *Elements) Metadata() *l8api.L8MetaData {
+	return this.metadata
+}
+
 // IsFilterMode returns true if the container is operating in filter mode,
 // which means it has no query but contains elements that can be used as
 // filter criteria.
