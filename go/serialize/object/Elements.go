@@ -16,6 +16,7 @@ package object
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	"github.com/saichler/l8ql/go/gsql/interpreter"
@@ -65,14 +66,18 @@ type Element struct {
 //
 // Returns the Elements container and any parsing error.
 func NewQuery(gsql string, resources ifs.IResources) (ifs.IElements, error) {
+	fmt.Println("[DEBUG-L8SRLZ] NewQuery: gsql=", gsql)
 	if gsql == "" {
 		return New(nil, &l8api.L8Query{}), nil
 	}
 	q, e := interpreter.NewQuery(gsql, resources)
 	if e != nil {
+		fmt.Println("[DEBUG-L8SRLZ] NewQuery: interpreter.NewQuery FAILED:", e.Error())
 		return nil, e
 	}
-	elems := &Elements{pquery: q.Query()}
+	pq := q.Query()
+	fmt.Println("[DEBUG-L8SRLZ] NewQuery: OK, pquery.Aggregates len=", len(pq.Aggregates))
+	elems := &Elements{pquery: pq}
 	return elems, nil
 }
 
@@ -177,10 +182,20 @@ func NewError(err string) ifs.IElements {
 func (this *Elements) Query(resources ifs.IResources) (ifs.IQuery, error) {
 	var err error
 	if this.query == nil && this.pquery != nil {
+		fmt.Println("[DEBUG-L8SRLZ] Elements.Query: pquery.Text=", this.pquery.Text, "pquery.Aggregates len=", len(this.pquery.Aggregates))
+		for i, agg := range this.pquery.Aggregates {
+			fmt.Println("[DEBUG-L8SRLZ] Elements.Query: aggregate[", i, "] func=", agg.Function, "field=", agg.Field)
+		}
 		this.query, err = interpreter.NewFromQuery(this.pquery, resources)
 		if err != nil {
+			fmt.Println("[DEBUG-L8SRLZ] Elements.Query: NewFromQuery FAILED:", err.Error())
 			return nil, err
 		}
+		fmt.Println("[DEBUG-L8SRLZ] Elements.Query: NewFromQuery OK")
+	} else if this.pquery == nil {
+		fmt.Println("[DEBUG-L8SRLZ] Elements.Query: pquery is NIL")
+	} else {
+		fmt.Println("[DEBUG-L8SRLZ] Elements.Query: query already initialized")
 	}
 	return this.query, nil
 }
