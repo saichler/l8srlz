@@ -41,6 +41,7 @@ type Elements struct {
 	pquery       *l8api.L8Query    // Protocol buffer query representation
 	metadata     *l8api.L8MetaData // Metadata including counts and pagination info
 	notification bool              // Flag indicating this is a notification
+	mustNotify   bool              // Validated at the origin, but still replicate
 
 	isReplica bool // Flag indicating this is a replica request
 	replica   byte // Replica number for distributed systems
@@ -98,12 +99,21 @@ func NewFromQuery(pq *l8api.L8Query, resources ifs.IResources) (ifs.IElements, e
 	return elems, nil
 }
 
-// NewNotify creates a new Elements container marked as a notification.
-// Notifications are used in event-driven systems to signal that data
-// has changed and should be processed accordingly.
-func NewNotify(any interface{}) ifs.IElements {
+// NewNotify creates a new Elements container marked as a notification, so the
+// service callback skips validation — the change is taken as already validated.
+//
+// Pass mustNotify=true when this container ORIGINATES the change, i.e. the
+// caller owns the data and has validated it itself. The service then still
+// produces the replication notification, instead of assuming one arrived from
+// another node. Without it, an originating write would never leave the
+// process that performed it.
+func NewNotify(any interface{}, mustNotify ...bool) ifs.IElements {
 	elems := New(nil, any)
-	elems.(*Elements).notification = true
+	e := elems.(*Elements)
+	e.notification = true
+	if len(mustNotify) > 0 {
+		e.mustNotify = mustNotify[0]
+	}
 	return elems
 }
 
@@ -130,6 +140,7 @@ func clone(e ifs.IElements) *Elements {
 	c.query = old.query
 	c.pquery = old.pquery
 	c.notification = old.notification
+	c.mustNotify = old.mustNotify
 	c.replica = old.replica
 	return c
 }
@@ -367,6 +378,12 @@ func (this *Elements) Deserialize(data []byte, r ifs.IRegistry) error {
 	}
 	this.pquery, _ = pq.(*l8api.L8Query)
 	return nil
+}
+
+// MustNotify returns true when this container originated the change and the
+// service must still produce a replication notification for it.
+func (this *Elements) MustNotify() bool {
+	return this.mustNotify
 }
 
 // Notification returns true if this Elements container is marked as a notification.
