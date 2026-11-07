@@ -78,13 +78,14 @@ func NewQuery(gsql string, resources ifs.IResources) (ifs.IElements, error) {
 }
 
 // NewFromQuery parses pq.Text into a fully-structured L8Query exactly like
-// NewQuery (RootType, Criteria, Register, etc. are only ever populated by
-// parsing the text through the L8QL grammar -- they cannot be set directly
-// on a bare incoming *l8api.L8Query), then re-stamps AaaId from pq onto the
-// resulting structured query. AaaId is the one field a caller sets directly
-// on the object rather than encoding into Text (e.g. ServiceHandler.serveHttp
-// stamps it from the validated bearer token), so a plain NewQuery(pq.Text,
-// resources) would silently drop it.
+// NewQuery (RootType, Criteria, etc. are only ever populated by parsing the
+// text through the L8QL grammar -- they cannot be set directly on a bare
+// incoming *l8api.L8Query), then re-stamps the fields a caller sets directly
+// on the object rather than encoding into Text, which a plain
+// NewQuery(pq.Text, resources) would silently drop:
+//   - AaaId (ServiceHandler.serveHttp stamps it from the validated token),
+//   - Register and RegisterId (the client sends them as fields of the query
+//     body). A Register set on pq wins over one parsed from the text.
 func NewFromQuery(pq *l8api.L8Query, resources ifs.IResources) (ifs.IElements, error) {
 	if pq.Text == "" {
 		return New(nil, pq), nil
@@ -95,6 +96,10 @@ func NewFromQuery(pq *l8api.L8Query, resources ifs.IResources) (ifs.IElements, e
 	}
 	structured := q.Query()
 	structured.AaaId = pq.AaaId
+	if pq.Register != l8api.L8Register_L8_REGISTER_INVALID {
+		structured.Register = pq.Register
+	}
+	structured.RegisterId = pq.RegisterId
 	elems := &Elements{pquery: structured}
 	return elems, nil
 }
